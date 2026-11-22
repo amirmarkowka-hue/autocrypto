@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AutoCrypto Empire v9</title>
+<style>
+:root{--bg:#0D1117;--phone-bg:#000;--card:#161B22;--card2:#1F2430;--primary:#58A6FF;--success:#3FB950;--danger:#F85149;--warning:#D29922;--text:#E6EDF3;--text-dim:#8B949E;--gold:#FFD700;--accent:#A371F7;--nav-bg:#161B22;--border:#30363d}
+[data-theme="light"]{--bg:#F0F2F5;--phone-bg:#FFF;--card:#FFF;--card2:#F3F4F6;--primary:#007AFF;--success:#34C759;--danger:#FF3B30;--warning:#FF9500;--text:#1C1C1E;--text-dim:#8E8E93;--gold:#FFCC00;--accent:#AF52DE;--nav-bg:#FFF;--border:#E5E5EA}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#000;color:var(--text);display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden}
+.phone{width:100%;height:100%;max-width:420px;max-height:850px;background:var(--phone-bg);position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:20px;border:8px solid #333}
+@media(max-width:420px){.phone{border-radius:0;border:none;max-height:100vh}}
+.status{height:28px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:12px;font-weight:bold;background:var(--phone-bg);z-index:10}
+#app{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;padding-bottom:80px}
+#app::-webkit-scrollbar{display:none}
+.nav{position:absolute;bottom:0;left:0;width:100%;height:60px;background:var(--nav-bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:10}
+.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;font-size:10px;color:var(--text-dim);border:none;background:transparent;gap:2px;cursor:pointer;position:relative}
+.nav-btn.active{color:var(--primary)}
+.nav-btn .ico{font-size:20px}
+.nav-badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--danger);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:bold;min-width:16px;text-align:center}
+.card{background:var(--card);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.card2{background:var(--card2)}
+.btn{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:6px;transition:.1s}
+.btn:active{transform:scale(.96);opacity:.8}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{padding:8px;font-size:12px}
+.btn-danger{background:var(--danger)}.btn-success{background:var(--success)}.btn-warning{background:var(--warning);color:#000}.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
+.row{display:flex;gap:6px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+h2{font-size:18px;margin-bottom:4px}h3{font-size:15px;margin-top:8px}
+.sub{font-size:12px;color:var(--text-dim)}.val{font-weight:bold;font-size:15px}
+.tg{color:var(--success)}.tr{color:var(--danger)}.ty{color:var(--gold)}.ta{color:var(--accent)}.tp{color:var(--primary)}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:100;padding:16px}
+.modal.open{display:flex}
+.mbox{background:var(--card);width:100%;max-width:360px;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:90vh;overflow-y:auto}
+.minput{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:10px;font-size:15px;width:100%;outline:none}
+.minput:focus{border-color:var(--primary)}
+canvas{border-radius:10px;touch-action:none}
+.sudoku{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--border);padding:3px;border-radius:8px;margin:8px auto}
+.scell{width:44px;height:44px;background:var(--card2);display:flex;justify-content:center;align-items:center;font-size:20px;font-weight:bold;cursor:pointer;border-radius:6px}
+.scell.fixed{background:var(--card);color:var(--text-dim)}.scell.active{border:2px solid var(--primary)}
+.numPad{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.numBtn{padding:10px 0;font-size:16px;background:var(--card2);border:none;border-radius:6px;color:var(--text);font-weight:bold;cursor:pointer}
+.numBtn:active{background:var(--primary);color:#fff}
+.bBoard{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;background:var(--border);padding:2px;border-radius:6px;touch-action:none;margin:8px auto}
+.bCell{width:36px;height:36px;background:var(--card2);border-radius:3px}
+.bCell.filled{background:var(--primary)}
+.pieces{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.piece{display:grid;gap:2px;cursor:grab;padding:4px;touch-action:none}
+.ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.8;transform:translate(-50%,-50%);display:grid;gap:2px}
+#toast{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:var(--success);color:#fff;padding:10px 20px;border-radius:24px;font-weight:bold;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:200;text-align:center;max-width:80%}
+.fade{position:absolute;top:0;left:0;width:100%;height:100%;background:#000;z-index:50;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .5s;flex-direction:column;gap:20px}
+.fade .scene{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;padding:20px}
+.city-label{font-size:22px;font-weight:bold;color:#fff;opacity:0;transition:opacity .6s;text-align:center}
+.city-label.visible{opacity:1}
+.road{width:80%;height:6px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);border-radius:3px;position:relative;overflow:hidden;margin-top:8px}
+.driving-car{font-size:70px;transform:translateX(-150%);transition:transform 2.2s cubic-bezier(0.4,0,0.2,1);filter:drop-shadow(0 0 20px rgba(88,166,255,0.7))}
+.raceTrack{width:100%;height:80px;background:linear-gradient(180deg,var(--card2),var(--bg));border-radius:10px;position:relative;overflow:hidden;margin:8px 0;border:1px solid var(--border)}
+.raceCar{position:absolute;top:50%;transform:translateY(-50%);font-size:32px;transition:left .1s linear;filter:drop-shadow(0 0 6px rgba(88,166,255,0.5))}
+.raceLine{position:absolute;top:0;left:calc(100% - 12px);height:100%;width:3px;background:repeating-linear-gradient(0deg,var(--gold) 0 8px,transparent 8px 16px)}
+.chatBox{background:var(--card2);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;margin-bottom:8px}
+.msg{padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;line-height:1.4;word-break:break-word}
+.msg.seller{background:var(--card);align-self:flex-start;border:1px solid var(--border)}
+.msg.player{background:var(--primary);color:#fff;align-self:flex-end}
+.msg.blocked{background:var(--danger);color:#fff;align-self:center;font-size:12px;text-align:center}
+.sortBar{display:flex;gap:4px;overflow-x:auto;padding:4px 0;margin-bottom:4px}
+.sortBar::-webkit-scrollbar{display:none}
+.sortBtn{padding:6px 12px;background:var(--card2);border:1px solid var(--border);color:var(--text-dim);border-radius:20px;font-size:12px;white-space:nowrap;cursor:pointer}
+.sortBtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.dmgList{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--text-dim);margin-top:4px;padding-left:8px}
+.dmgItem{position:relative;padding-left:12px}
+.dmgItem::before{content:'⚠️';position:absolute;left:-4px;font-size:10px}
+.progress{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin-top:4px}
+.progressBar{height:100%;background:var(--primary);transition:width .3s}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;background:var(--card2);color:var(--text-dim)}
+.card-exclusive{border:2px solid var(--gold)!important;box-shadow:0 0 14px rgba(255,215,0,0.35)}
+.card-listed{border:2px dashed var(--warning)!important}
+.carPicWrap{width:90px;height:56px;background:linear-gradient(135deg,var(--card2),var(--card));border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border)}
+.carPicWrap svg{max-width:100%;max-height:100%}
+.appGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;padding:8px 4px}
+.appIcon{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative}
+.appIcon:active .icoBox{transform:scale(.92)}
+.appIcon .icoBox{width:62px;height:62px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--primary),var(--accent));box-shadow:0 4px 12px rgba(0,0,0,0.35);transition:transform .1s;position:relative}
+.appIcon .icoName{font-size:11px;color:var(--text);text-align:center;font-weight:500;line-height:1.15}
+.appIcon .appBadge{position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;border-radius:12px;padding:2px 6px;font-size:10px;font-weight:bold;min-width:18px;text-align:center;border:2px solid var(--phone-bg)}
+.lotCard{background:linear-gradient(135deg,var(--card2),var(--card));border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);position:relative;overflow:hidden}
+.lotCard::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(255,215,0,0.1),transparent 60%);pointer-events:none}
+.lotTimer{position:absolute;top:10px;right:10px;background:var(--danger);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:bold;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.lotBid{font-size:22px;font-weight:bold;color:var(--gold)}
+.tierBanner{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:bold}
+.mgChat{display:flex;gap:10px;align-items:center;padding:10px;background:var(--card2);border-radius:12px;cursor:pointer;transition:.1s}
+.mgChat:active{transform:scale(.98)}
+.mgAvatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;color:#fff;flex-shrink:0}
+.mgInfo{flex:1;min-width:0}
+.mgName{font-weight:bold;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.mgPreview{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mgUnread{background:var(--danger);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;font-weight:bold}
+.forecast{font-size:13px;font-weight:bold;margin-top:8px;text-align:center;padding:8px;border-radius:10px;background:var(--card2)}
+</style>
+</head>
+<body data-theme="dark">
+<div class="phone">
+<div class="status"><span id="sTime">День 1 · 09:00</span><span>📶 5G 🔋 100%</span></div>
+<div id="app"></div>
+<div class="nav">
+<button class="nav-btn active" id="nav-menu" onclick="switchTab('menu')"><span class="ico">🏠</span>Главная</button>
+<button class="nav-btn" id="nav-shop" onclick="switchTab('shop')"><span class="ico">🛒</span>Магазин</button>
+<button class="nav-btn" id="nav-garage" onclick="switchTab('garage')"><span class="ico">🚗</span>Гараж</button>
+<button class="nav-btn" id="nav-games" onclick="switchTab('games')"><span class="ico">🎮</span>Игры</button>
+<button class="nav-btn" id="nav-more" onclick="switchTab('more')"><span class="ico">⋯</span>Ещё<span class="nav-badge" id="navMersBadge" style="display:none">0</span></button>
+</div>
+<div class="fade" id="fadeAnim"></div>
+</div>
+
+<div class="modal" id="mInput"><div class="mbox"><div id="mInputTitle" style="text-align:center;font-weight:bold"></div><input class="minput" id="mInputField"><div class="row"><button class="btn btn-outline" onclick="closeModal('mInput')">Отмена</button><button class="btn" onclick="submitInput()">ОК</button></div></div></div>
+<div class="modal" id="mPattern"><div class="mbox"><div id="mPatternTitle" style="text-align:center;font-weight:bold">Нарисуйте код</div><div class="sub" style="text-align:center">Соедините минимум 4 точки</div><canvas id="pCanvas" width="280" height="280" style="background:var(--card2)"></canvas><button class="btn btn-outline" onclick="closeModal('mPattern')">Отмена</button></div></div>
+<div class="modal" id="mChat"><div class="mbox"><div id="mChatTitle" style="text-align:center;font-weight:bold"></div><div class="chatBox" id="chatBox"></div><div id="chatActions"></div></div></div>
+<div class="modal" id="mVisual"><div class="mbox"><h2 class="tp" style="text-align:center">Визуал и тюнинг</h2><div id="visualOptions" style="display:flex;flex-direction:column;gap:8px"></div><button class="btn btn-outline" onclick="closeModal('mVisual')">Закрыть</button></div></div>
+<div class="modal" id="mAlert"><div class="mbox" style="text-align:center"><div id="alertContent"></div><button class="btn btn-success" style="margin-top:10px" id="alertBtn" onclick="closeModal('mAlert')">ОК</button></div></div>
+<div class="modal" id="mSudoku"><div class="mbox"><h2 style="text-align:center">🧩 Судоку 4x4</h2><div id="sudokuBoard" class="sudoku"></div><div class="numPad"><button class="numBtn" onclick="inputSudoku(1)">1</button><button class="numBtn" onclick="inputSudoku(2)">2</button><button class="numBtn" onclick="inputSudoku(3)">3</button><button class="numBtn" onclick="inputSudoku(4)">4</button><button class="numBtn" onclick="inputSudoku(0)" style="color:var(--danger)">X</button></div><div class="row" style="margin-top:10px"><button class="btn btn-outline" onclick="closeModal('mSudoku')">Выйти</button><button class="btn btn-success" onclick="checkSudoku()">Проверить</button></div></div></div>
+<div class="modal" id="mBlock"><div class="mbox"><h2 style="text-align:center">🧱 Блок Крипт</h2><div id="blockBoard" class="bBoard"></div><div id="blockPieces" class="pieces"></div><button class="btn btn-outline" style="margin-top:8px" onclick="closeModal('mBlock')">Выйти</button></div></div>
+<div class="modal" id="mRace"><div class="mbox"><h2 style="text-align:center">🏁 Гонка</h2><div id="raceInfo" style="text-align:center"></div><div class="raceTrack" id="raceTrack"><div class="raceLine"></div><div class="raceCar" id="racePlayer" style="left:0">🚗</div><div class="raceCar" id="raceEnemy" style="left:0">🚙</div></div><div id="raceResult" style="text-align:center;font-weight:bold;margin-top:8px"></div><button class="btn" style="margin-top:10px" onclick="closeModal('mRace')">Закрыть</button></div></div>
+<div class="modal" id="mMers"><div class="mbox" style="max-width:400px"><div id="mersTitle" style="text-align:center;font-weight:bold;margin-bottom:6px"></div><div class="chatBox" id="mersBox" style="max-height:340px"></div><div id="mersActions"></div><button class="btn btn-outline" style="margin-top:6px" onclick="closeModal('mMers');render()">Назад</button></div></div>
+<div id="toast"></div>
+
+<script>
+// ===== CONSTANTS =====
+const CITIES={
+"Москва":{fuel:0,desc:"Элитный",minR:4,maxR:5,pm:2.0,minC:80,maxC:100,houseMod:2.0,garageLimit:2},
+"Лыткарино":{fuel:3000,desc:"Средний",minR:2,maxR:4,pm:1.5,minC:60,maxC:95,houseMod:1.2,garageLimit:2},
+"Люберцы":{fuel:4500,desc:"Средний",minR:2,maxR:4,pm:1.5,minC:60,maxC:95,houseMod:1.2,garageLimit:2},
+"Жуковский":{fuel:4000,desc:"Средний",minR:2,maxR:4,pm:1.5,minC:60,maxC:95,houseMod:1.3,garageLimit:2},
+"Островцы":{fuel:3500,desc:"Эконом",minR:1,maxR:3,pm:1.0,minC:40,maxC:92,houseMod:0.8,garageLimit:2},
+"д. Васильево":{fuel:2500,desc:"Деревня",minR:1,maxR:2,pm:1.0,minC:20,maxC:85,houseMod:0.5,garageLimit:1}
+};
+
+// ~240 моделей. Формат: [brand, model, govPrice, power(hp), rarity 1-5]
+// 1 — эконом, 2 — бюджет/хэтч, 3 — средний, 4 — премиум/спорт, 5 — суперкар/экзотика
+const CARS=[
+// ===== РОССИЯ / СНГ =====
+["Lada","2101",5000,62,1],["Lada","2103",5500,70,1],["Lada","2105",5000,68,1],
+["Lada","2106",6000,75,1],["Lada","2107",6500,75,1],["Lada","2108",5500,65,1],
+["Lada","2109",6000,73,1],["Lada","2110",7500,80,1],["Lada","2112",8000,92,1],
+["Lada","2114",8500,82,1],["Lada","2115",8000,78,1],["Lada","Kalina",9000,90,1],
+["Lada","Granta",6500,87,1],["Lada","Vesta",11000,113,1],["Lada","XRAY",12000,122,1],
+["Lada","Niva Legend",15000,83,2],["Lada","Niva Travel",17000,80,2],["Lada","Largus",13000,105,1],
+["УАЗ","Hunter",18000,135,2],["УАЗ","Patriot",22000,150,2],["УАЗ","Profi",20000,150,2],
+["ГАЗ","Volga",10000,105,1],["ГАЗ","Sobol",20000,140,2],["ГАЗ","Gazelle Next",25000,150,2],
+["Москвич","2140",5000,75,1],["Москвич","2141",6000,85,1],["Москвич","408",4500,55,1],
+
+// ===== TOYOTA (много) =====
+["Toyota","Yaris",13000,100,1],["Toyota","Aygo",10000,72,1],["Toyota","iQ",9000,98,1],
+["Toyota","Starlet",8000,90,1],["Toyota","Carina",15000,120,2],["Toyota","Corolla Verso",18000,130,2],
+["Toyota","Auris",20000,130,2],["Toyota","Avensis",25000,150,2],["Toyota","Prius",28000,122,2],
+["Toyota","C-HR",30000,150,3],["Toyota","Yaris Cross",26000,120,2],["Toyota","Corolla Cross",32000,170,3],
+["Toyota","RAV4",35000,200,3],["Toyota","Crown",40000,250,4],["Toyota","Land Cruiser",80000,300,4],
+["Toyota","Land Cruiser Prado",55000,250,4],["Toyota","Fortuner",50000,240,4],["Toyota","Hilux",40000,200,3],
+["Toyota","4Runner",55000,260,4],["Toyota","Tundra",70000,380,4],["Toyota","Tacoma",50000,280,4],
+["Toyota","Sequoia",75000,380,4],["Toyota","Sienna",45000,250,3],["Toyota","Highlander",60000,280,4],
+["Toyota","Alphard",65000,250,4],["Toyota","bZ4X",48000,220,4],["Toyota","Mirai",50000,182,4],
+["Toyota","Celica",25000,190,3],["Toyota","MR2",28000,175,3],["Toyota","MR-S",25000,140,3],
+["Toyota","GT86",42000,200,4],["Toyota","GR Supra",85000,340,4],["Toyota","GR Yaris",55000,272,4],
+["Toyota","Corolla",22000,140,2],["Toyota","Camry",35000,200,3],
+["Toyota","Mark II",20000,200,3],["Toyota","Chaser",22000,220,3],["Toyota","Cresta",22000,220,3],
+["Toyota","Supra",55000,320,4],
+
+// ===== NISSAN =====
+["Nissan","Sunny",10000,90,1],["Nissan","Almera",12000,107,1],["Nissan","Primera",15000,130,2],
+["Nissan","Micra",11000,88,1],["Nissan","Note",13000,110,1],["Nissan","Tiida",14000,110,2],
+["Nissan","Juke",20000,117,2],["Nissan","Qashqai",28000,150,2],["Nissan","X-Trail",33000,170,3],
+["Nissan","Murano",45000,250,4],["Nissan","Patrol",85000,400,4],["Nissan","Pathfinder",55000,280,4],
+["Nissan","Navara",42000,190,3],["Nissan","Teana",30000,180,3],["Nissan","Maxima",35000,300,4],
+["Nissan","350Z",45000,300,4],["Nissan","370Z",55000,330,4],["Nissan","GT-R",130000,570,5],
+["Nissan","Skyline R32",45000,280,4],["Nissan","Skyline R33",55000,300,4],["Nissan","Skyline R34",75000,280,4],
+["Nissan","Silvia S13",22000,205,3],["Nissan","Silvia S14",28000,220,3],["Nissan","Silvia S15",35000,250,4],
+["Nissan","Silvia",30000,250,3],["Nissan","180SX",25000,205,3],["Nissan","Leaf",18000,110,2],
+["Nissan","Ariya",38000,220,3],["Nissan","Juke Nismo",32000,218,4],
+
+// ===== HONDA =====
+["Honda","Civic",26000,158,2],["Honda","Accord",30000,180,3],["Honda","CR-V",32000,190,3],
+["Honda","HR-V",24000,140,2],["Honda","Jazz",16000,100,2],["Honda","Fit",16000,110,2],
+["Honda","Insight",22000,100,2],["Honda","City",15000,120,2],["Honda","CR-Z",24000,124,3],
+["Honda","Integra",20000,200,3],["Honda","Prelude",22000,200,3],["Honda","S2000",50000,240,4],
+["Honda","NSX",90000,290,5],["Honda","Odyssey",35000,250,3],["Honda","Pilot",45000,285,4],
+["Honda","Legend",40000,300,4],
+
+// ===== MAZDA =====
+["Mazda","2",12000,90,1],["Mazda","3",18000,120,2],["Mazda","6",24000,150,2],
+["Mazda","CX-3",22000,120,2],["Mazda","CX-5",32000,165,3],["Mazda","CX-30",30000,150,3],
+["Mazda","CX-50",38000,190,4],["Mazda","MX-5",35000,160,3],["Mazda","MX-6",22000,160,3],
+["Mazda","RX-7",45000,280,4],["Mazda","RX-8",30000,231,3],["Mazda","MPV",22000,170,3],
+["Mazda","Tribute",18000,150,2],
+
+// ===== SUBARU =====
+["Subaru","Impreza",18000,140,2],["Subaru","Impreza STI",35000,300,4],
+["Subaru","Legacy",22000,165,3],["Subaru","Outback",28000,180,3],["Subaru","Forester",26000,160,3],
+["Subaru","XV",25000,150,3],["Subaru","BRZ",38000,200,4],["Subaru","WRX",45000,268,4],
+["Subaru","WRX STI",55000,305,4],["Subaru","Levorg",35000,200,4],
+
+// ===== MITSUBISHI =====
+["Mitsubishi","Lancer",16000,140,2],["Mitsubishi","Lancer Evolution VIII",42000,280,4],
+["Mitsubishi","Lancer Evolution IX",48000,291,4],["Mitsubishi","Lancer Evolution X",38000,291,4],
+["Mitsubishi","Evo X",38000,291,4],["Mitsubishi","Outlander",30000,180,3],
+["Mitsubishi","ASX",22000,150,2],["Mitsubishi","Eclipse Cross",28000,163,3],
+["Mitsubishi","Pajero",45000,250,4],["Mitsubishi","Pajero Sport",42000,181,3],
+["Mitsubishi","L200",35000,180,3],["Mitsubishi","Colt",10000,95,1],
+["Mitsubishi","3000GT",30000,320,4],["Mitsubishi","Eclipse",22000,200,3],
+
+// ===== SUZUKI =====
+["Suzuki","Swift",12000,90,1],["Suzuki","SX4",16000,120,2],["Suzuki","Vitara",22000,140,2],
+["Suzuki","Grand Vitara",24000,169,3],["Suzuki","Jimny",25000,102,2],["Suzuki","Ignis",13000,90,1],
+
+// ===== LEXUS =====
+["Lexus","ES",55000,215,4],["Lexus","IS",45000,245,4],["Lexus","GS",60000,315,4],
+["Lexus","LS",120000,415,5],["Lexus","RX",65000,300,4],["Lexus","NX",50000,240,4],
+["Lexus","LX",140000,415,5],["Lexus","UX",42000,180,4],["Lexus","RC",75000,315,5],
+["Lexus","LC",150000,471,5],
+
+// ===== INFINITI / ACURA =====
+["Infiniti","G35",35000,280,4],["Infiniti","Q50",55000,300,4],["Infiniti","QX80",110000,405,5],
+["Acura","TLX",45000,290,4],["Acura","MDX",55000,290,4],
+
+// ===== BMW =====
+["BMW","1 Series",30000,150,3],["BMW","3 Series",48000,255,3],["BMW","4 Series",55000,258,4],
+["BMW","5 Series",62000,330,4],["BMW","7 Series",150000,450,5],["BMW","X1",40000,190,3],
+["BMW","X3",55000,248,4],["BMW","X5",95000,340,4],["BMW","X6",110000,380,5],
+["BMW","M2",85000,410,5],["BMW","M3",100000,431,5],["BMW","M4",110000,450,5],
+["BMW","M5",120000,625,5],["BMW","i3",25000,170,3],["BMW","i8",140000,374,5],
+["BMW","Z4",70000,340,4],["BMW","E30",25000,170,3],["BMW","E36",28000,190,3],
+["BMW","E46",35000,231,4],
+
+// ===== MERCEDES =====
+["Mercedes","A-Class",32000,160,3],["Mercedes","B-Class",28000,150,3],["Mercedes","C-Class",52000,245,3],
+["Mercedes","E-Class",65000,320,4],["Mercedes","S-Class",160000,450,5],["Mercedes","CLA",45000,220,4],
+["Mercedes","CLS",85000,330,4],["Mercedes","GLA",42000,224,4],["Mercedes","GLC",60000,258,4],
+["Mercedes","GLE",95000,340,4],["Mercedes","GLS",130000,380,5],["Mercedes","G-Class",180000,422,5],
+["Mercedes","AMG GT",160000,585,5],["Mercedes","SL",150000,469,5],["Mercedes","SLS AMG",200000,571,5],
+["Mercedes","EQS",140000,530,5],["Mercedes","190E",25000,160,3],
+
+// ===== AUDI =====
+["Audi","A1",22000,116,2],["Audi","A3",32000,150,3],["Audi","A4",50000,240,3],
+["Audi","A5",60000,265,4],["Audi","A6",70000,340,4],["Audi","A7",90000,340,4],
+["Audi","A8",140000,450,5],["Audi","Q3",42000,190,4],["Audi","Q5",65000,261,4],
+["Audi","Q7",75000,340,4],["Audi","Q8",110000,340,5],["Audi","TT",55000,245,4],
+["Audi","R8",180000,610,5],["Audi","RS3",80000,400,5],["Audi","RS6",130000,600,5],
+["Audi","RS7",140000,600,5],["Audi","e-tron",85000,408,5],
+
+// ===== VW =====
+["VW","Polo",17000,110,2],["VW","Golf",22000,130,2],["VW","Jetta",24000,150,2],
+["VW","Passat",36000,180,3],["VW","Arteon",55000,280,4],["VW","Tiguan",40000,220,3],
+["VW","Touareg",85000,340,4],["VW","Teramont",65000,280,4],["VW","ID.3",38000,204,4],
+["VW","ID.4",45000,299,4],["VW","ID.Buzz",55000,204,4],["VW","Scirocco",30000,200,3],
+["VW","Beetle",25000,150,2],["VW","Amarok",45000,258,4],
+
+// ===== PORSCHE =====
+["Porsche","Macan",85000,360,4],["Porsche","911",145000,385,5],["Porsche","718 Cayman",95000,300,5],
+["Porsche","718 Boxster",95000,300,5],["Porsche","Taycan",150000,530,5],["Porsche","Panamera",180000,440,5],
+["Porsche","Cayenne",130000,340,5],
+
+// ===== OPEL =====
+["Opel","Astra",18000,140,2],["Opel","Corsa",14000,100,2],["Opel","Insignia",26000,170,3],
+["Opel","Mokka",22000,130,2],
+
+// ===== FORD =====
+["Ford","Focus",18000,125,2],["Ford","Focus ST",42000,280,4],["Ford","Fiesta",14000,100,2],
+["Ford","Mondeo",28000,200,3],["Ford","Mustang",85000,460,4],["Ford","Mustang Mach-E",75000,346,5],
+["Ford","F-150",95000,400,4],["Ford","Ranger",42000,220,3],["Ford","Explorer",65000,300,4],
+["Ford","Bronco",60000,270,4],["Ford","GT",350000,647,5],["Ford","Taurus",30000,260,3],
+
+// ===== CHEVROLET =====
+["Chevrolet","Cruze",20000,141,2],["Chevrolet","Aveo",12000,100,1],["Chevrolet","Lacetti",14000,110,2],
+["Chevrolet","Spark",10000,85,1],["Chevrolet","Malibu",32000,250,3],["Chevrolet","Camaro",75000,275,4],
+["Chevrolet","Corvette C7",160000,466,5],["Chevrolet","Corvette C8",200000,495,5],
+["Chevrolet","Silverado",100000,420,4],["Chevrolet","Tahoe",110000,355,5],["Chevrolet","Blazer",45000,230,3],
+
+// ===== DODGE =====
+["Dodge","Charger",55000,300,4],["Dodge","Challenger",65000,305,4],
+["Dodge","Durango",60000,295,4],["Dodge","Viper",150000,645,5],["Dodge","RAM 1500",85000,395,4],
+
+// ===== JEEP =====
+["Jeep","Wrangler",60000,285,4],["Jeep","Grand Cherokee",70000,295,4],
+["Jeep","Cherokee",45000,270,3],["Jeep","Compass",38000,180,3],["Jeep","Gladiator",65000,285,4],
+
+// ===== CADILLAC =====
+["Cadillac","CTS",50000,270,4],["Cadillac","Escalade",150000,420,5],["Cadillac","XT5",60000,310,4],
+
+// ===== TESLA =====
+["Tesla","Model S",130000,670,5],["Tesla","Model 3",60000,283,4],
+["Tesla","Model X",150000,670,5],["Tesla","Model Y",70000,384,5],["Tesla","Cybertruck",140000,600,5],
+
+// ===== LINCOLN / CHRYSLER =====
+["Lincoln","Navigator",140000,440,5],["Lincoln","Aviator",95000,400,5],["Chrysler","300",40000,292,4],
+
+// ===== HYUNDAI =====
+["Hyundai","Solaris",14000,123,1],["Hyundai","Accent",13000,123,1],["Hyundai","Elantra",22000,150,2],
+["Hyundai","Sonata",35000,245,3],["Hyundai","i30",20000,140,2],["Hyundai","Tucson",30000,180,3],
+["Hyundai","Santa Fe",45000,270,4],["Hyundai","Creta",22000,149,2],["Hyundai","Kona",28000,190,3],
+["Hyundai","Ioniq 5",55000,325,4],["Hyundai","Ioniq 6",55000,325,4],["Hyundai","Genesis",50000,290,4],
+
+// ===== KIA =====
+["Kia","Rio",15000,123,1],["Kia","Cerato",20000,150,2],["Kia","Optima",28000,192,3],
+["Kia","K5",35000,290,4],["Kia","Sportage",32000,180,3],["Kia","Sorento",45000,281,4],
+["Kia","Soul",22000,150,2],["Kia","Stinger",65000,370,5],["Kia","Ceed",18000,128,2],
+["Kia","Seltos",30000,190,3],["Kia","EV6",60000,325,5],
+
+// ===== GENESIS =====
+["Genesis","G70",55000,252,4],["Genesis","G80",75000,375,5],["Genesis","GV70",70000,300,5],
+["Genesis","GV80",90000,375,5],
+
+// ===== RENAULT =====
+["Renault","Logan",9000,90,1],["Renault","Sandero",10000,90,1],["Renault","Duster",18000,143,2],
+["Renault","Kaptur",20000,143,2],["Renault","Arkana",25000,150,3],["Renault","Megane",20000,130,2],
+["Renault","Clio",15000,90,2],["Renault","Scenic",18000,130,2],["Renault","Zoe",22000,135,3],
+
+// ===== PEUGEOT =====
+["Peugeot","206",10000,90,1],["Peugeot","208",16000,110,2],["Peugeot","308",20000,130,2],
+["Peugeot","408",24000,150,3],["Peugeot","508",32000,225,3],["Peugeot","2008",20000,130,2],
+["Peugeot","3008",32000,180,3],["Peugeot","5008",38000,225,3],["Peugeot","RCZ",32000,200,3],
+
+// ===== CITROEN / DS =====
+["Citroen","C3",15000,110,2],["Citroen","C4",22000,150,2],["Citroen","C5",28000,180,3],
+["Citroen","C-Elysee",12000,115,1],["Citroen","Berlingo",18000,130,2],
+["DS","DS3",22000,155,2],["DS","DS7",40000,225,3],
+
+// ===== FIAT =====
+["Fiat","500",12000,90,1],["Fiat","Panda",10000,80,1],["Fiat","Punto",12000,100,1],
+["Fiat","Tipo",16000,120,2],["Fiat","500X",22000,150,2],
+
+// ===== ALFA ROMEO =====
+["Alfa Romeo","MiTo",22000,140,2],["Alfa Romeo","Giulietta",28000,170,3],
+["Alfa Romeo","Giulia",60000,280,4],["Alfa Romeo","Stelvio",75000,280,4],["Alfa Romeo","4C",120000,240,5],
+
+// ===== FERRARI =====
+["Ferrari","F8",280000,720,5],["Ferrari","458",180000,570,5],["Ferrari","488",220000,661,5],
+["Ferrari","812",350000,800,5],["Ferrari","Roma",270000,620,5],["Ferrari","Portofino",260000,600,5],
+["Ferrari","California",200000,560,5],["Ferrari","SF90",400000,1000,5],["Ferrari","LaFerrari",1500000,963,5],
+["Ferrari","430",150000,490,5],
+
+// ===== LAMBORGHINI =====
+["Lamborghini","Huracan",260000,640,5],["Lamborghini","Aventador",450000,700,5],
+["Lamborghini","Urus",350000,650,5],["Lamborghini","Gallardo",180000,560,5],
+["Lamborghini","Murcielago",250000,640,5],["Lamborghini","Revuelto",500000,1015,5],
+
+// ===== MASERATI =====
+["Maserati","Ghibli",75000,345,4],["Maserati","Quattroporte",150000,580,5],
+["Maserati","Levante",120000,430,5],["Maserati","MC20",280000,630,5],
+
+// ===== PAGANI =====
+["Pagani","Huayra",2000000,730,5],
+
+// ===== JAGUAR =====
+["Jaguar","XE",45000,250,4],["Jaguar","XF",65000,300,4],["Jaguar","XJ",110000,470,5],
+["Jaguar","E-Pace",50000,250,4],["Jaguar","F-Pace",80000,340,5],["Jaguar","F-Type",110000,380,5],
+["Jaguar","X-Type",25000,200,3],
+
+// ===== LAND ROVER =====
+["Land Rover","Defender",90000,300,4],["Land Rover","Discovery",80000,300,4],
+["Land Rover","Range Rover",150000,400,5],["Land Rover","Range Rover Sport",130000,400,5],
+["Land Rover","Range Rover Velar",110000,340,5],["Land Rover","Range Rover Evoque",65000,240,4],
+
+// ===== BENTLEY =====
+["Bentley","Continental GT",280000,542,5],["Bentley","Flying Spur",320000,626,5],
+["Bentley","Bentayga",350000,600,5],
+
+// ===== ROLLS-ROYCE =====
+["Rolls-Royce","Ghost",400000,571,5],["Rolls-Royce","Phantom",600000,571,5],
+["Rolls-Royce","Cullinan",550000,571,5],
+
+// ===== ASTON MARTIN =====
+["Aston Martin","DB11",250000,630,5],["Aston Martin","DBS",350000,725,5],
+["Aston Martin","Vantage",220000,510,5],["Aston Martin","DBX",300000,550,5],
+
+// ===== McLAREN =====
+["McLaren","720S",300000,720,5],["McLaren","570S",250000,562,5],
+["McLaren","765LT",400000,765,5],["McLaren","P1",1500000,903,5],
+["McLaren","Senna",1800000,800,5],["McLaren","Artura",300000,680,5],
+
+// ===== MINI / LOTUS =====
+["Mini","Cooper",20000,136,2],["Mini","Countryman",32000,192,3],["Mini","Clubman",28000,192,3],
+["Lotus","Elise",80000,220,4],["Lotus","Exige",95000,350,5],
+["Lotus","Evora",110000,400,5],["Lotus","Emira",130000,400,5],
+
+// ===== VOLVO =====
+["Volvo","S40",22000,150,2],["Volvo","S60",42000,250,4],["Volvo","S90",65000,320,4],
+["Volvo","V60",45000,250,4],["Volvo","V90",65000,320,4],["Volvo","XC40",42000,200,4],
+["Volvo","XC60",60000,250,4],["Volvo","XC90",85000,320,4],
+
+// ===== SKODA =====
+["Skoda","Fabia",14000,110,2],["Skoda","Octavia",24000,150,2],["Skoda","Superb",32000,220,3],
+["Skoda","Rapid",16000,125,2],["Skoda","Scala",20000,150,2],["Skoda","Karoq",30000,180,3],
+["Skoda","Kodiaq",40000,220,3],["Skoda","Yeti",18000,150,2],
+
+// ===== КИТАЙ =====
+["Chery","Tiggo 7",22000,147,2],["Chery","Tiggo 8",28000,186,3],
+["Geely","Coolray",25000,177,3],["Geely","Atlas",30000,180,3],["Geely","Monjaro",45000,238,4],
+["Haval","Jolion",22000,143,2],["Haval","F7",32000,190,3],
+["BYD","Han",55000,510,5],["BYD","Seal",50000,530,4]
+];
+
+const EXCLUSIVE_CARS={
+"VAZ2106":{brand:"VAZ",model:"2106 «Дикая шаха»",power:350,rarity:6,price:100000000,exclusive:true,desc:"Тюнингованная классика. Только через промокод."}
+};
+
+const PROMOCODES={
+"VANECHKA":{type:"car",value:"VAZ2106",desc:"Эксклюзив: VAZ 2106 «Дикая шаха» (350 л.с.)"}
+};
+
+const JDM=["Toyota","Nissan","Mazda","Subaru","Mitsubishi","Honda","Lexus","Acura","Infiniti","Suzuki"];
+const SUPERBRANDS=["Bugatti","Ferrari","Lamborghini","McLaren","Porsche","Pagani","Bentley","Rolls-Royce","Aston Martin","Koenigsegg"];
+
+const PROPERTY_TYPES={
+"коммуналка":{name:"Коммуналка",price:0,rent:0,tier:0,emoji:"🏚️"},
+"студия":{name:"Студия",basePrice:400000,rent:15000,tier:1,emoji:"🏢"},
+"квартира2":{name:"2-комн. квартира",basePrice:1200000,rent:40000,tier:2,emoji:"🏬"},
+"дом":{name:"Дом",basePrice:3000000,rent:100000,tier:3,emoji:"🏠"},
+"особняк":{name:"Особняк",basePrice:10000000,rent:300000,tier:4,emoji:"🏰"}
+};
+
+const MINING_FARMS={
+"базовая":{name:"Базовая ферма",price:50000,betDay:0.5,strDay:1,emoji:"⛏️"},
+"средняя":{name:"Средняя ферма",price:250000,betDay:2,strDay:4,emoji:"⚙️"},
+"элитная":{name:"Элитная ферма",price:2000000,betDay:10,strDay:20,emoji:"🏭"}
+};
+
+const LEVELS=[0,10,25,45,70,100,140,190,250,320,400,500,700,1000,1500,2000,3000,5000,8000,12000,20000];
+
+const DAILY_QUESTS=[
+{id:"buy",text:"Купить машину",xp:5,money:2000,check:()=>player.statsSession.carsBought>0},
+{id:"sell",text:"Продать машину",xp:5,money:2000,check:()=>player.statsSession.carsSold>0},
+{id:"race",text:"Выиграть гонку",xp:5,money:2000,check:()=>player.statsSession.racesWon>0}
+];
+
+const CONTAINER_TIERS={
+bronze:{name:"Бронзовый",emoji:"📦",startPrice:15000,color:"#CD7F32",rMin:1,rMax:2},
+silver:{name:"Серебряный",emoji:"🎁",startPrice:60000,color:"#C0C0C0",rMin:2,rMax:3},
+gold:{name:"Золотой",emoji:"💎",startPrice:250000,color:"#FFD700",rMin:3,rMax:4},
+legend:{name:"Легендарный",emoji:"👑",startPrice:1200000,color:"#A371F7",rMin:4,rMax:6}
+};
+
+const APPS=[
+{id:'realestate',name:'Недвижимость',emoji:'🏢',bg:'linear-gradient(135deg,#58A6FF,#1F6FEB)'},
+{id:'quests',name:'Задания',emoji:'📋',bg:'linear-gradient(135deg,#3FB950,#1A7F37)'},
+{id:'crypto',name:'Крипта',emoji:'₿',bg:'linear-gradient(135deg,#F7931A,#8A5A00)'},
+{id:'auction',name:'Аукцион',emoji:'🎰',bg:'linear-gradient(135deg,#FFD700,#B8860B)'},
+{id:'mersgram',name:'MersGram',emoji:'💬',bg:'linear-gradient(135deg,#58A6FF,#A371F7)',badge:'mersgram'},
+{id:'travel',name:'Города',emoji:'🚙',bg:'linear-gradient(135deg,#3FB950,#58A6FF)'},
+{id:'stats',name:'Статистика',emoji:'📊',bg:'linear-gradient(135deg,#A371F7,#6F42C1)'},
+{id:'promo',name:'Промокод',emoji:'🎁',bg:'linear-gradient(135deg,#F85149,#D29922)'},
+{id:'settings',name:'Настройки',emoji:'⚙️',bg:'linear-gradient(135deg,#8B949E,#30363d)'}
+];
+
+// ===== STATE =====
+let player={
+name:"Игрок",pattern:"",money:100000,usd:1000,bet:100,str:100,
+cars:[],garages:{},properties:[],farms:[],residenceId:null,
+level:1,xp:0,day:1,hour:9,minute:0,city:"Москва",
+statsTotal:{startedAt:Date.now(),timePlayed:0,moneyEarned:0},
+statsSession:{startedAt:Date.now(),timePlayed:0,moneyEarned:0,carsBought:0,carsSold:0,racesWon:0},
+questsDone:{},tutorialDone:false,
+promosUsed:{},
+crypto:{btc:0,rate:300000,lastUpdate:0},
+mersgram:{chats:[]},
+theme:"dark",sound:true,currentTab:"menu"
+};
+let market=[],bazar=[],sortMode={shop:"default",bazar:"default"};
+let auctionState={lot:null};
+
+// ===== UTILS =====
+function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function fmtUsd(n){return '$'+n.toLocaleString('ru-RU')}
+function save(){try{localStorage.setItem('autocrypto_v9',JSON.stringify(player))}catch(e){}}
+function load(){
+try{
+const d=localStorage.getItem('autocrypto_v9')||localStorage.getItem('autocrypto_v8')||localStorage.getItem('autocrypto_v7');
+if(d){
+const p=JSON.parse(d);player=Object.assign(player,p);
+player.minute=player.minute||0;
+if(!player.promosUsed)player.promosUsed={};
+if(!player.crypto)player.crypto={btc:0,rate:300000,lastUpdate:0};
+if(!player.mersgram)player.mersgram={chats:[]};
+player.cars.forEach(c=>{if(!c.hasOwnProperty('listing'))c.listing=null;});
+document.body.setAttribute('data-theme',player.theme||'dark');
+}
+}catch(e){}
+}
+
+let audioCtx;
+function sfx(t){
+if(!player.sound)return;
+try{
+if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+o.connect(g);g.connect(audioCtx.destination);
+if(t==='click'){o.frequency.value=600;g.gain.value=.03;o.type='sine';o.start();o.stop(audioCtx.currentTime+.05)}
+else if(t==='success'){o.frequency.value=800;g.gain.value=.08;o.type='triangle';o.start();o.frequency.exponentialRampToValueAtTime(1200,audioCtx.currentTime+.1);o.stop(audioCtx.currentTime+.15)}
+else if(t==='error'){o.frequency.value=200;g.gain.value=.08;o.type='sawtooth';o.start();o.stop(audioCtx.currentTime+.15)}
+else if(t==='cash'){o.frequency.value=1200;g.gain.value=.08;o.type='sine';o.start();o.frequency.exponentialRampToValueAtTime(1800,audioCtx.currentTime+.08);o.stop(audioCtx.currentTime+.15)}
+else if(t==='levelup'){o.frequency.value=500;g.gain.value=.1;o.type='square';o.start();o.frequency.exponentialRampToValueAtTime(1500,audioCtx.currentTime+.3);o.stop(audioCtx.currentTime+.35)}
+}catch(e){}
+}
+
+let toastTimer=null;
+function toast(msg,err=false){
+const t=document.getElementById('toast');
+t.innerText=msg;t.style.background=err?'var(--danger)':'var(--success)';
+t.style.opacity='1';sfx(err?'error':'success');
+if(toastTimer)clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>t.style.opacity='0',2200);
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openModal(id){document.getElementById(id).classList.add('open')}
+
+function addMoney(n){player.money+=n;if(n>0){player.statsTotal.moneyEarned+=n;player.statsSession.moneyEarned+=n}}
+function spendMoney(n){player.money-=n}
+
+// ===== CAR SVG =====
+function carSVG(car, w=86, h=54){
+let type = 'sedan';
+if(car.exclusive) type='classic';
+else if(car.rarity>=5) type='sport';
+else if(car.rarity>=4) type='suv';
+else if(car.rarity<=1) type='classic';
+else if(car.rarity===2) type='hatch';
+else type='sedan';
+
+let color = '#8B949E';
+if(car.exclusive) color='#FFD700';
+else if(car.rarity>=5) color='#F85149';
+else if(car.rarity>=4) color='#A371F7';
+else if(car.rarity>=3) color='#58A6FF';
+else if(car.rarity>=2) color='#3FB950';
+else color='#8B949E';
+
+const shapes = {
+sport: `<path d="M8 32 L12 22 Q20 16 32 16 Q44 16 52 20 L58 26 L58 34 Q58 36 56 36 L8 36 Q6 36 6 34 Z" fill="${color}"/><circle cx="18" cy="36" r="4.5" fill="#111"/><circle cx="18" cy="36" r="2" fill="#666"/><circle cx="44" cy="36" r="4.5" fill="#111"/><circle cx="44" cy="36" r="2" fill="#666"/><path d="M16 20 Q28 16 42 18 L44 24 L14 24 Z" fill="#0D1117" opacity="0.65"/><rect x="50" y="24" width="6" height="2" fill="#FFD700" opacity="0.8"/>`,
+suv: `<path d="M6 34 L8 18 Q10 14 16 14 L48 14 Q54 14 56 18 L58 32 L58 36 L6 36 Z" fill="${color}"/><circle cx="16" cy="36" r="5" fill="#111"/><circle cx="16" cy="36" r="2.5" fill="#666"/><circle cx="46" cy="36" r="5" fill="#111"/><circle cx="46" cy="36" r="2.5" fill="#666"/><rect x="13" y="18" width="11" height="9" fill="#0D1117" opacity="0.6"/><rect x="26" y="18" width="11" height="9" fill="#0D1117" opacity="0.6"/><rect x="39" y="18" width="11" height="9" fill="#0D1117" opacity="0.6"/>`,
+sedan: `<path d="M6 34 L8 24 Q12 20 22 20 L40 20 Q50 20 54 24 L58 32 L58 36 L6 36 Z" fill="${color}"/><circle cx="16" cy="36" r="4" fill="#111"/><circle cx="16" cy="36" r="2" fill="#666"/><circle cx="46" cy="36" r="4" fill="#111"/><circle cx="46" cy="36" r="2" fill="#666"/><rect x="17" y="22" width="13" height="6" fill="#0D1117" opacity="0.6"/><rect x="32" y="22" width="13" height="6" fill="#0D1117" opacity="0.6"/>`,
+hatch: `<path d="M6 34 L8 25 Q12 21 20 21 L44 21 Q50 21 54 25 L58 32 L58 36 L6 36 Z" fill="${color}"/><circle cx="16" cy="36" r="4" fill="#111"/><circle cx="16" cy="36" r="2" fill="#666"/><circle cx="46" cy="36" r="4" fill="#111"/><circle cx="46" cy="36" r="2" fill="#666"/><rect x="17" y="23" width="14" height="6" fill="#0D1117" opacity="0.6"/><rect x="34" y="23" width="11" height="6" fill="#0D1117" opacity="0.6"/>`,
+classic: `<path d="M8 34 L10 22 Q12 18 20 18 L36 18 Q44 18 48 22 L56 30 L56 36 L8 36 Z" fill="${color}"/><circle cx="18" cy="36" r="4" fill="#111"/><circle cx="18" cy="36" r="2" fill="#666"/><circle cx="44" cy="36" r="4" fill="#111"/><circle cx="44" cy="36" r="2" fill="#666"/><rect x="18" y="22" width="10" height="6" fill="#0D1117" opacity="0.6"/><rect x="30" y="22" width="10" height="6" fill="#0D1117" opacity="0.6"/><circle cx="49" cy="28" r="2.2" fill="#FFF" opacity="0.85"/>`
+};
+return `<svg viewBox="0 0 64 40" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">${shapes[type]||shapes.sedan}</svg>`;
+}
+
+// ===== CLOCK =====
+let clockTicker=null;
+function startClock(){
+if(clockTicker)clearInterval(clockTicker);
+clockTicker=setInterval(()=>{
+if(!player.pattern)return;
+player.minute=(player.minute||0)+1;
+if(player.minute>=60){player.minute=0;player.hour++;updateCryptoRate();maybeGenMersgram();maybeGenBuyerForListings(0.15);}
+if(player.hour>=24){player.hour=0;player.day++;}
+updateClockDisplay();
+if(player.minute===0)save();
+},1000);
+}
+function updateClockDisplay(){
+const el=document.getElementById('sTime');
+if(el)el.innerText=`День ${player.day} · ${player.hour.toString().padStart(2,'0')}:${(player.minute||0).toString().padStart(2,'0')}`;
+}
+function advanceTime(mins){
+player.minute=(player.minute||0)+mins;
+while(player.minute>=60){player.minute-=60;player.hour++;}
+while(player.hour>=24){player.hour-=24;player.day++;}
+updateClockDisplay();
+}
+
+// ===== CRYPTO =====
+function updateCryptoRate(){
+const old=player.crypto.rate||300000;
+const drift=0.9+Math.random()*0.2;
+player.crypto.rate=Math.max(50000,Math.floor(old*drift));
+player.crypto.lastUpdate=Date.now();
+}
+function buyCrypto(){
+const cost=player.crypto.rate;
+if(player.money<cost){toast('Недостаточно денег',true);return}
+spendMoney(cost);player.crypto.btc+=1;
+save();render();sfx('cash');toast(`Куплен 1 BTC за ${fmt(cost)}`);
+}
+function sellCrypto(){
+if(player.crypto.btc<=0){toast('Нет BTC',true);return}
+const gain=player.crypto.rate;player.crypto.btc-=1;addMoney(gain);
+save();render();sfx('cash');toast(`Продан 1 BTC за ${fmt(gain)}`);
+}
+
+// ===== INPUT =====
+let inputCb=null;
+function askInput(title,cb,isPwd=false){
+document.getElementById('mInputTitle').innerText=title;
+const inp=document.getElementById('mInputField');
+inp.value='';inp.type=isPwd?'password':'text';
+openModal('mInput');inputCb=cb;
+setTimeout(()=>inp.focus(),100);
+}
+function submitInput(){const v=document.getElementById('mInputField').value;closeModal('mInput');const cb=inputCb;inputCb=null;if(cb)cb(v)}
+
+// ===== PATTERN =====
+let pCanvas,pCtx,pDrawing=false,pDots=[],pCallback=null,pCurrent={x:0,y:0},pPrev={x:0,y:0};
+const pGrid=[{x:60,y:60,id:0},{x:140,y:60,id:1},{x:220,y:60,id:2},{x:60,y:140,id:3},{x:140,y:140,id:4},{x:220,y:140,id:5},{x:60,y:220,id:6},{x:140,y:220,id:7},{x:220,y:220,id:8}];
+function initPattern(){
+pCanvas=document.getElementById('pCanvas');pCtx=pCanvas.getContext('2d');
+pCanvas.addEventListener('mousedown',pStart);pCanvas.addEventListener('mousemove',pMove);window.addEventListener('mouseup',pEnd);
+pCanvas.addEventListener('touchstart',pStart,{passive:false});pCanvas.addEventListener('touchmove',pMove,{passive:false});window.addEventListener('touchend',pEnd);
+}
+function pCoords(e){const r=pCanvas.getBoundingClientRect();const cx=e.touches?e.touches[0].clientX:e.clientX;const cy=e.touches?e.touches[0].clientY:e.clientY;return{x:cx-r.left,y:cy-r.top}}
+function pStart(e){e.preventDefault();pDrawing=true;pDots=[];pCurrent=pCoords(e);pPrev={...pCurrent};pCheckNear(pCurrent);pDraw()}
+function pMove(e){if(!pDrawing)return;e.preventDefault();pPrev={...pCurrent};pCurrent=pCoords(e);pCheckLine(pPrev,pCurrent);pCheckNear(pCurrent);pDraw()}
+function pEnd(){if(!pDrawing)return;pDrawing=false;pDraw();if(pDots.length>=4){const code=pDots.join('-');const cb=pCallback;pCallback=null;closeModal('mPattern');if(cb)setTimeout(()=>cb(code),50)}else if(pDots.length>0){toast('Минимум 4 точки!',true);pDots=[];pDraw()}}
+function pCheckLine(a,b){const dx=b.x-a.x,dy=b.y-a.y;const lenSq=dx*dx+dy*dy;if(lenSq<1)return;for(const dot of pGrid){if(pDots.includes(dot.id))continue;const t=Math.max(0,Math.min(1,((dot.x-a.x)*dx+(dot.y-a.y)*dy)/lenSq));const px=a.x+t*dx,py=a.y+t*dy;const dist=Math.hypot(dot.x-px,dot.y-py);if(dist<22)pDots.push(dot.id)}}
+function pCheckNear(pos){for(const dot of pGrid){if(pDots.includes(dot.id))continue;if(Math.hypot(pos.x-dot.x,pos.y-dot.y)<25)pDots.push(dot.id)}}
+function pDraw(){if(!pCtx)return;pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);for(const dot of pGrid){pCtx.beginPath();pCtx.arc(dot.x,dot.y,10,0,Math.PI*2);pCtx.fillStyle=pDots.includes(dot.id)?'#58A6FF':'#444';pCtx.fill()}pCtx.beginPath();pCtx.strokeStyle='#58A6FF';pCtx.lineWidth=4;pCtx.lineCap='round';pCtx.lineJoin='round';if(pDots.length>0){const first=pGrid.find(d=>d.id===pDots[0]);pCtx.moveTo(first.x,first.y);for(let i=1;i<pDots.length;i++){const d=pGrid.find(dd=>dd.id===pDots[i]);pCtx.lineTo(d.x,d.y)}if(pDrawing)pCtx.lineTo(pCurrent.x,pCurrent.y);pCtx.stroke()}}
+function askPattern(title,cb){document.getElementById('mPatternTitle').innerText=title;openModal('mPattern');pCallback=cb;pDots=[];pDrawing=false;pDraw()}
+
+// ===== GOV PRICE =====
+function getGovPrice(car){
+if(car.basePrice)return car.basePrice;
+if(car.exclusive)return 100000000;
+const found=CARS.find(c=>c[0]===car.brand&&c[1]===car.model);
+return found?found[2]:10000;
+}
+
+function getDamages(cond){
+const pool=[];
+if(cond<95)pool.push("Мелкие царапины по кузову");
+if(cond<85)pool.push("Сколы на капоте","Потёртости на сиденьях");
+if(cond<75)pool.push("Износ тормозных колодок","Поцарапан бампер");
+if(cond<60)pool.push("Не работает кондиционер","Помят капот");
+if(cond<45)pool.push("Ржавчина на порогах","Скрип в подвеске","Течь масла");
+if(cond<30)pool.push("Сильная ржавчина кузова","Проблемы с двигателем");
+if(cond<15)pool.push("Не заводится","Гнилой кузов","Нужен капремонт");
+if(pool.length===0)pool.push("Идеальное состояние, без замечаний");
+return pool.slice(0,3);
+}
+
+// ===== MARKET =====
+function generateMarket(){
+const c=CITIES[player.city];
+market=[];bazar=[];
+for(let i=0;i<15;i++){
+const car=CARS[Math.floor(Math.random()*CARS.length)];
+const price=Math.floor(car[2]*c.pm*8);
+const cond=Math.floor(Math.random()*(c.maxC-c.minC+1))+c.minC;
+const seller=Math.random()<0.15?"Частник":(Math.random()<0.5?"Артём":"Сергей");
+market.push({brand:car[0],model:car[1],power:car[3],rarity:car[4],price,condition:cond,basePrice:price,seller,damages:getDamages(cond),haggleCount:0});
+const bPrice=Math.floor(price*(0.65+Math.random()*0.15));
+const isScam=Math.random()<0.3;
+const realCond=isScam?Math.max(10,cond-Math.floor(Math.random()*30)):cond;
+bazar.push({brand:car[0],model:car[1],power:car[3],rarity:car[4],price:bPrice,condition:cond,realCondition:realCond,isScam,basePrice:bPrice,seller:"Частник",damages:getDamages(isScam?realCond:cond),haggleCount:0});
+}
+}
+
+function sortCars(list){
+const m=sortMode[player.currentTab==='bazar'?'bazar':'shop'];
+if(m==='priceAsc')return[...list].sort((a,b)=>a.price-b.price);
+if(m==='priceDesc')return[...list].sort((a,b)=>b.price-a.price);
+if(m==='condAsc')return[...list].sort((a,b)=>a.condition-b.condition);
+if(m==='condDesc')return[...list].sort((a,b)=>b.condition-a.condition);
+if(m==='power')return[...list].sort((a,b)=>b.power-a.power);
+return list;
+}
+
+// ===== CHAT =====
+let currentChatCar=null,currentChatIsBazar=false,currentChatIdx=-1;
+function openChat(idx,isBazar){
+const car=isBazar?bazar[idx]:market[idx];
+if(!car)return;
+currentChatCar=car;currentChatIsBazar=isBazar;currentChatIdx=idx;
+document.getElementById('mChatTitle').innerText=`💬 ${car.seller} · ${car.brand} ${car.model}`;
+document.getElementById('chatBox').innerHTML=`
+<div class="msg seller">Привет! Продаю ${car.brand} ${car.model} за ${fmt(car.price)}. Состояние ${car.condition}%.</div>
+<div class="msg player">Расскажи про недостатки</div>
+<div class="msg seller">Известные проблемы: ${car.damages.join(', ')}</div>
+`;
+if(car.haggleCount>=2){
+document.getElementById('chatBox').innerHTML+=`<div class="msg blocked">🚫 Продавец вас заблокировал</div>`;
+document.getElementById('chatActions').innerHTML=`<button class="btn btn-outline" onclick="closeModal('mChat')">Закрыть</button>`;
+}else{
+document.getElementById('chatActions').innerHTML=`
+<button class="btn btn-warning" onclick="chatHaggle()" style="margin-bottom:6px">🤝 Поторговаться (${2-car.haggleCount}/2)</button>
+<button class="btn" onclick="chatExchange()" style="margin-bottom:6px">🔄 Обмен</button>
+<button class="btn btn-success" onclick="chatBuy()" style="margin-bottom:6px">💰 Купить за ${fmt(car.price)}</button>
+<button class="btn btn-outline" onclick="closeModal('mChat')">Уйти</button>
+`;
+}
+openModal('mChat');
+}
+
+function chatHaggle(){
+const car=currentChatCar;
+if(car.haggleCount>=2){toast('Заблокирован!',true);return}
+car.haggleCount++;
+const box=document.getElementById('chatBox');
+box.innerHTML+=`<div class="msg player">Скинешь? (попытка ${car.haggleCount}/2)</div>`;
+setTimeout(()=>{
+if(Math.random()<0.5){const disc=Math.floor(car.price*(0.05+Math.random()*0.15));car.price-=disc;box.innerHTML+=`<div class="msg seller">Ладно, уступаю ${fmt(disc)}. Итог: ${fmt(car.price)}</div>`;sfx('success');}
+else{box.innerHTML+=`<div class="msg seller">Нет, цена окончательная.</div>`;sfx('error');}
+if(car.haggleCount>=2){box.innerHTML+=`<div class="msg seller">Всё, больше не пиши.</div><div class="msg blocked">🚫 Заблокирован</div>`;document.getElementById('chatActions').innerHTML=`<button class="btn btn-outline" onclick="closeModal('mChat')">Закрыть</button>`;}
+else{document.getElementById('chatActions').innerHTML=`
+<button class="btn btn-warning" onclick="chatHaggle()" style="margin-bottom:6px">🤝 Ещё торг (${2-car.haggleCount}/2)</button>
+<button class="btn" onclick="chatExchange()" style="margin-bottom:6px">🔄 Обмен</button>
+<button class="btn btn-success" onclick="chatBuy()" style="margin-bottom:6px">💰 Купить за ${fmt(car.price)}</button>
+<button class="btn btn-outline" onclick="closeModal('mChat')">Уйти</button>
+`;}
+box.scrollTop=box.scrollHeight;
+},500);
+box.scrollTop=box.scrollHeight;
+}
+
+function chatExchange(){
+if(player.cars.length===0){toast('У вас нет машин',true);return}
+const box=document.getElementById('chatBox');
+box.innerHTML+=`<div class="msg player">Может, обменяемся?</div>`;
+setTimeout(()=>{
+box.innerHTML+=`<div class="msg seller">Какую предлагаешь? Оценю в 70% от рынка.</div>`;
+let opts='';
+player.cars.forEach((c,i)=>{
+if(c.exclusive||c.listing){return}
+const myVal=Math.floor(getGovPrice(c)*0.7);
+const diff=currentChatCar.price-myVal;
+opts+=`<button class="btn btn-sm" style="margin-bottom:4px;background:var(--card2);color:var(--text)" onclick="doExchange(${i},${diff})">${c.brand} ${c.model} (${diff>=0?'+'+fmt(diff):fmt(diff)})</button>`;
+});
+opts+='<button class="btn btn-outline" onclick="closeModal(\'mChat\')">Отмена</button>';
+document.getElementById('chatActions').innerHTML=opts;
+box.scrollTop=box.scrollHeight;
+},500);
+box.scrollTop=box.scrollHeight;
+}
+
+function doExchange(idx,diff){
+if(diff>0&&player.money<diff){toast('Не хватает на доплату',true);return}
+const myCar=player.cars[idx];
+if(myCar.exclusive||myCar.listing){toast('Нельзя обменять',true);return}
+if(diff>0)spendMoney(diff);else addMoney(-diff);
+player.cars.splice(idx,1);
+const target={...currentChatCar,condition:currentChatIsBazar?currentChatCar.realCondition:currentChatCar.condition,stage:0,purchasePrice:currentChatCar.price,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}};
+player.cars.push(target);
+if(currentChatIsBazar)bazar.splice(currentChatIdx,1);else market.splice(currentChatIdx,1);
+player.statsSession.carsBought++;
+save();closeModal('mChat');render();
+toast('Обмен выполнен!');
+}
+
+function chatBuy(){
+const car=currentChatCar;
+if(player.money<car.price){toast('Недостаточно денег',true);return}
+const maxSlots=3+(player.garages[player.city]||0);
+if(player.cars.length>=maxSlots){toast(`Лимит слотов (${maxSlots})`,true);return}
+askPattern('Код для покупки',(drawn)=>{
+if(drawn!==player.pattern){toast('Неверный узор!',true);return}
+spendMoney(car.price);
+const finalCar={...car,condition:currentChatIsBazar?car.realCondition:car.condition,stage:0,purchasePrice:car.price,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}};
+player.cars.push(finalCar);
+if(currentChatIsBazar)bazar.splice(currentChatIdx,1);else market.splice(currentChatIdx,1);
+player.statsSession.carsBought++;
+save();closeModal('mChat');render();
+toast(currentChatIsBazar&&car.isScam?`Куплено, но состояние хуже! (${finalCar.condition}%)`:`Куплено: ${car.brand}`);
+});
+}
+
+function diagnostics(idx){
+if(player.money<5000){toast('Нужно 5 000 ₽',true);return}
+spendMoney(5000);
+const car=bazar[idx];
+car.condition=car.realCondition;car.isScam=false;car.damages=getDamages(car.condition);
+save();render();toast(`Реальное состояние: ${car.condition}%`);
+}
+
+// ===== LISTING =====
+function buyerForecast(price, govPrice){
+if(!price||price<1)return{text:'Введите цену',color:'var(--text-dim)'};
+const ratio=price/govPrice;
+if(ratio<=0.3)return{text:'🔥🔥🔥 Огонь! Очередь покупателей',color:'var(--success)'};
+if(ratio<=0.6)return{text:'🔥 Очень выгодно, много желающих',color:'var(--success)'};
+if(ratio<=1.0)return{text:'👍 Справедливо, будут писать',color:'var(--primary)'};
+if(ratio<=1.5)return{text:'🤔 Дороговато, мало желающих',color:'var(--warning)'};
+if(ratio<=2.5)return{text:'🥶 Слишком дорого, почти никто',color:'var(--danger)'};
+if(ratio<=5)return{text:'💀 Почти невозможно продать',color:'var(--danger)'};
+if(ratio<=50)return{text:'☠️ Никто не купит по такой цене',color:'var(--text-dim)'};
+return{text:'🌑 Мёртвая цена — не напишет никто',color:'var(--text-dim)'};
+}
+
+function openSellDialog(idx){
+const car=player.cars[idx];
+if(!car)return;
+askPattern(car.listing?'Подтвердите изменение':'Код для выставления',(drawn)=>{
+if(drawn!==player.pattern){toast('Неверный узор!',true);return}
+showSellPriceModal(idx);
+});
+}
+
+function showSellPriceModal(idx){
+const car=player.cars[idx];
+if(!car)return;
+const gov=getGovPrice(car);
+const currentPrice=car.listing?car.listing.price:'';
+const btn=document.getElementById('alertBtn');
+btn.innerText='Закрыть';
+btn.onclick=()=>closeModal('mAlert');
+document.getElementById('alertContent').innerHTML=`
+<h3 style="color:var(--primary)">${car.brand} ${car.model}</h3>
+<div class="sub">Гос. стоимость: <b>${fmt(gov)}</b></div>
+${car.exclusive?'<div class="sub ty">🔥 Эксклюзив</div>':''}
+<input class="minput" id="sellPriceInput" type="number" placeholder="Ваша цена, ₽" value="${currentPrice}" style="margin-top:10px">
+<div class="forecast" id="sellForecast" style="color:var(--text-dim)">Введите цену</div>
+<button class="btn btn-success" style="margin-top:10px" onclick="confirmList(${idx})">${car.listing?'✏️ Обновить цену':'🏷️ Выставить на продажу'}</button>
+${car.listing?`<button class="btn btn-outline" style="margin-top:6px" onclick="closeModal('mAlert');unlistCar(${idx})">❌ Снять с продажи</button>`:''}
+`;
+openModal('mAlert');
+const input=document.getElementById('sellPriceInput');
+const forecastEl=document.getElementById('sellForecast');
+function updateForecast(){const p=parseInt(input.value)||0;const f=buyerForecast(p,gov);forecastEl.innerHTML=f.text;forecastEl.style.color=f.color;}
+input.addEventListener('input',updateForecast);
+if(currentPrice)updateForecast();
+setTimeout(()=>input.focus(),100);
+}
+
+function confirmList(idx){
+const car=player.cars[idx];
+if(!car)return;
+const input=document.getElementById('sellPriceInput');
+const price=parseInt(input.value);
+if(!price||price<1){toast('Неверная цена',true);return}
+if(car.listing){car.listing.price=price;}
+else{car.listing={price,id:'lst_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),listedAt:Date.now()};}
+save();closeModal('mAlert');render();
+toast(`Выставлено за ${fmt(price)}`);
+}
+
+function unlistCar(idx){
+const car=player.cars[idx];
+if(!car||!car.listing)return;
+const listingId=car.listing.id;
+car.listing=null;
+player.mersgram.chats.forEach(ch=>{
+if(ch.offer&&ch.offer.type==='buy'&&ch.offer.listingId===listingId){
+ch.messages.push({from:'them',text:'Уже неактуально'});
+ch.resolved=true;ch.offer=null;
+}
+});
+save();render();toast('Снято с продажи');
+}
+
+function quickSell(idx){
+const car=player.cars[idx];
+if(!car||car.listing||car.exclusive){toast('Нельзя',true);return}
+const price=Math.floor(getGovPrice(car)*0.8)+(car.visualVal||0);
+askPattern('Код для быстрой продажи',(drawn)=>{
+if(drawn!==player.pattern){toast('Неверный узор!',true);return}
+addMoney(price);player.cars.splice(idx,1);
+player.statsSession.carsSold++;
+save();render();sfx('cash');toast(`Продано за ${fmt(price)}`);
+});
+}
+
+// ===== VISUAL =====
+function openVisual(idx){
+const car=player.cars[idx];
+if(car.listing){toast('Сначала снимите с продажи',true);return}
+const repairCost=Math.min(30000,Math.max(1000,Math.floor((100-car.condition)*400)));
+let html='';
+if(car.condition<100){html+=`<button class="btn btn-success btn-sm" onclick="applyVisual(${idx},'repair',${repairCost})">🛠️ Шпаклевка до 100% — ${fmt(repairCost)}</button>`;}
+html+=`<button class="btn btn-sm" onclick="applyVisual(${idx},'paint',10000)">🎨 Покраска (+5к к цене) — 10 000 ₽</button>`;
+html+=`<button class="btn btn-sm" onclick="applyVisual(${idx},'polish',5000)">✨ Полировка (+2к) — 5 000 ₽</button>`;
+html+=`<button class="btn btn-sm" onclick="applyVisual(${idx},'ceramic',15000)">🛡️ Керамика (+8к) — 15 000 ₽</button>`;
+if(JDM.includes(car.brand)||car.exclusive){
+if(!car.jdm)car.jdm={buffer:false,amp:false,frame:false,exhaust:false};
+if(!car.jdm.buffer)html+=`<button class="btn btn-warning btn-sm" onclick="applyJDM(${idx},'buffer',25000)">🔧 Буфер — 25 000 ₽</button>`;
+if(!car.jdm.amp)html+=`<button class="btn btn-warning btn-sm" onclick="applyJDM(${idx},'amp',30000)">🔊 Усилитель — 30 000 ₽</button>`;
+if(!car.jdm.frame)html+=`<button class="btn btn-warning btn-sm" onclick="applyJDM(${idx},'frame',50000)">🛡️ Усил. рама (+10%) — 50 000 ₽</button>`;
+if(!car.jdm.exhaust)html+=`<button class="btn btn-warning btn-sm" onclick="applyJDM(${idx},'exhaust',20000)">💨 Спортвыхлоп (+5%) — 20 000 ₽</button>`;
+}
+if(car.stage<4){const sc=Math.floor(getGovPrice(car)*0.2);html+=`<button class="btn btn-sm" onclick="upgradeStage(${idx},${sc})">⚙️ Stage+ (${fmt(sc)})</button>`;}
+document.getElementById('visualOptions').innerHTML=html;
+openModal('mVisual');
+}
+function applyVisual(idx,type,cost){
+const car=player.cars[idx];
+if(player.money<cost){toast('Мало денег',true);return}
+spendMoney(cost);
+if(type==='repair')car.condition=100;
+if(type==='paint')car.visualVal=(car.visualVal||0)+5000;
+if(type==='polish')car.visualVal=(car.visualVal||0)+2000;
+if(type==='ceramic')car.visualVal=(car.visualVal||0)+8000;
+save();closeModal('mVisual');render();toast('Готово!');
+}
+function applyJDM(idx,type,cost){
+const car=player.cars[idx];
+if(player.money<cost){toast('Мало денег',true);return}
+spendMoney(cost);
+if(!car.jdm)car.jdm={buffer:false,amp:false,frame:false,exhaust:false};
+car.jdm[type]=true;
+if(type==='frame')car.power=Math.floor(car.power*1.1);
+if(type==='exhaust')car.power=Math.floor(car.power*1.05);
+car.visualVal=(car.visualVal||0)+Math.floor(cost*0.4);
+save();closeModal('mVisual');render();toast('JDM установлен!');
+}
+function upgradeStage(idx,cost){
+const car=player.cars[idx];
+if(car.stage>=4)return;
+if(player.money<cost){toast('Мало денег',true);return}
+spendMoney(cost);car.stage++;car.power=Math.floor(car.power*1.2);
+save();closeModal('mVisual');render();toast(`Stage ${car.stage}!`);
+}
+
+// ===== PROMO =====
+function openPromo(){
+askInput('Введите промокод:',(code)=>{
+const c=(code||'').toUpperCase().trim();
+if(!c)return;
+if(player.promosUsed[c]){toast('Промокод уже использован',true);return}
+if(!PROMOCODES[c]){toast('Неверный промокод',true);return}
+const promo=PROMOCODES[c];
+if(promo.type==='car'){
+const base=EXCLUSIVE_CARS[promo.value];
+if(!base){toast('Ошибка промокода',true);return}
+const maxSlots=3+(player.garages[player.city]||0);
+if(player.cars.length>=maxSlots){toast(`Гараж полон (${maxSlots})`,true);return}
+player.cars.push({brand:base.brand,model:base.model,power:base.power,rarity:base.rarity,price:base.price,basePrice:base.price,condition:100,seller:"Промокод",damages:["🔥 Эксклюзив!"],haggleCount:0,exclusive:true,stage:0,purchasePrice:base.price,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}});
+player.promosUsed[c]=true;
+save();render();sfx('levelup');toast('🎁 Получено: '+base.model);
+}
+});
+}
+
+function giveExclusive(key){
+const base=EXCLUSIVE_CARS[key];
+if(!base)return;
+const maxSlots=3+(player.garages[player.city]||0);
+if(player.cars.length>=maxSlots){toast(`Гараж полон`,true);return}
+player.cars.push({brand:base.brand,model:base.model,power:base.power,rarity:base.rarity,price:base.price,basePrice:base.price,condition:100,seller:"Разработчик",damages:["🔥 Эксклюзив!"],haggleCount:0,exclusive:true,stage:0,purchasePrice:base.price,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}});
+save();render();sfx('levelup');toast('Выдано: '+base.model);
+}
+
+// ===== AUCTION =====
+function generateAuctionLot(){
+const tiers=Object.keys(CONTAINER_TIERS);
+const tier=tiers[Math.floor(Math.random()*tiers.length)];
+const cfg=CONTAINER_TIERS[tier];
+let contentCar;
+if(tier==='legend'&&Math.random()<0.08){
+contentCar={brand:'VAZ',model:'2106 «Дикая шаха»',power:350,rarity:6,price:100000000,exclusive:true,basePrice:100000000};
+}else{
+const pool=CARS.filter(c=>c[4]>=cfg.rMin&&c[4]<=cfg.rMax);
+contentCar=pool[Math.floor(Math.random()*pool.length)];
+}
+const bots=[
+{name:'Артём',max:cfg.startPrice*1.8,nextBidAt:Date.now()+4000+Math.random()*4000},
+{name:'Сергей',max:cfg.startPrice*2.4,nextBidAt:Date.now()+7000+Math.random()*5000},
+{name:'Макс',max:cfg.startPrice*1.4,nextBidAt:Date.now()+9000+Math.random()*6000}
+];
+auctionState.lot={tier,contentCar,startPrice:cfg.startPrice,currentBid:Math.floor(cfg.startPrice*0.5),bidder:'none',endsAt:Date.now()+45000,bots};
+}
+
+function auctionTick(){
+if(!auctionState.lot)return;
+const lot=auctionState.lot;const now=Date.now();
+lot.bots.forEach(bot=>{
+if(now>=bot.nextBidAt&&lot.bidder!=='player'&&bot.max>lot.currentBid){
+const inc=Math.floor((lot.currentBid*0.1)+1000);
+const nextBid=lot.currentBid+inc;
+if(nextBid<=bot.max){lot.currentBid=nextBid;lot.bidder=bot.name;bot.nextBidAt=now+3000+Math.random()*5000;}
+}else if(now>=bot.nextBidAt){bot.nextBidAt=now+3000+Math.random()*5000;}
+});
+if(now>=lot.endsAt){
+if(lot.bidder==='player'){
+const maxSlots=3+(player.garages[player.city]||0);
+if(player.cars.length>=maxSlots){addMoney(lot.currentBid);toast('Гараж полон! Ставка возвращена',true);}
+else{
+const cc=lot.contentCar;
+const nc={brand:cc[0]||cc.brand,model:cc[1]||cc.model,power:cc[3]||cc.power,rarity:cc[4]||cc.rarity,price:cc[2]||cc.price,basePrice:cc[2]||cc.price,condition:70+Math.floor(Math.random()*30),seller:"Контейнер",damages:[],haggleCount:0,exclusive:!!cc.exclusive,stage:0,purchasePrice:lot.currentBid,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}};
+nc.damages=getDamages(nc.condition);
+player.cars.push(nc);player.statsSession.carsBought++;
+toast(`🎉 Контейнер: ${nc.brand} ${nc.model}!`);sfx('levelup');
+}
+}else if(lot.bidder!=='none'){toast(`Лот ушёл ${lot.bidder} за ${fmt(lot.currentBid)}`,true);}
+auctionState.lot=null;
+setTimeout(generateAuctionLot,3000);
+if(player.currentTab==='auction')render();
+save();return;
+}
+if(player.currentTab==='auction')render();
+}
+
+function placeBid(){
+const lot=auctionState.lot;
+if(!lot){toast('Лот закрыт',true);return}
+const minBid=lot.currentBid+1000;
+const available=player.money+(lot.bidder==='player'?lot.currentBid:0);
+askInput(`Ставка (мин ${fmt(minBid)}, у вас ${fmt(available)}):`,(v)=>{
+const bid=parseInt(v);
+if(!bid||bid<minBid){toast(`Минимум ${fmt(minBid)}`,true);return}
+if(bid>player.money+(lot.bidder==='player'?lot.currentBid:0)){toast('Не хватает',true);return}
+if(lot.bidder==='player')addMoney(lot.currentBid);
+spendMoney(bid);lot.currentBid=bid;lot.bidder='player';
+setTimeout(()=>{
+if(!auctionState.lot)return;
+auctionState.lot.bots.forEach(bot=>{
+if(bot.max>auctionState.lot.currentBid&&Math.random()<0.5){bot.nextBidAt=Date.now()+500+Math.random()*1500;}
+});
+},1000);
+save();render();toast(`Ставка ${fmt(bid)}`);
+});
+}
+function startAuctionTicker(){setInterval(auctionTick,500);}
+
+// ===== MERSGRAM =====
+function maybeGenMersgram(){if(Math.random()<0.15)genMersgramIncoming();}
+
+function genMersgramIncoming(){
+if(!player.mersgram)player.mersgram={chats:[]};
+const names=['Артём','Сергей','Макс','Дима','Вова','Частник','Андрей','Кирилл'];
+const name=names[Math.floor(Math.random()*names.length)];
+const id='mg_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+const car=CARS[Math.floor(Math.random()*CARS.length)];
+const cond=Math.floor(40+Math.random()*60);
+const price=Math.floor(car[2]*CITIES[player.city].pm*(5+Math.random()*6));
+player.mersgram.chats.unshift({id,name,avatar:name[0],lastText:`${car[0]} ${car[1]} за ${fmt(price)}`,unread:1,messages:[{from:'them',text:`Привет! Продаю ${car[0]} ${car[1]}, состояние ${cond}%. Цена ${fmt(price)}. Интересно?`}],offer:{type:'sale',brand:car[0],model:car[1],power:car[3],rarity:car[4],price,condition:cond,damages:getDamages(cond)},resolved:false});
+updateMersBadge();save();
+}
+
+function maybeGenBuyerForListings(multiplier=1){
+player.cars.forEach((car,idx)=>{
+if(!car.listing)return;
+const ratio=car.listing.price/getGovPrice(car);
+let chance;
+if(ratio<=0.3)chance=0.95;
+else if(ratio<=0.6)chance=0.75;
+else if(ratio<=1.0)chance=0.45;
+else if(ratio<=1.5)chance=0.15;
+else if(ratio<=2.5)chance=0.05;
+else if(ratio<=5)chance=0.01;
+else chance=0;
+chance*=multiplier;
+if(Math.random()<chance)genBuyerForCar(idx);
+});
+}
+
+function genBuyerForCar(idx){
+const car=player.cars[idx];
+if(!car||!car.listing)return;
+const listingPrice=car.listing.price;
+const names=['Артём','Сергей','Макс','Дима','Вова','Андрей','Кирилл','Рома','Стас','Игорь'];
+const name=names[Math.floor(Math.random()*names.length)];
+const id='mg_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+let offerPrice;
+const r=Math.random();
+if(r<0.5)offerPrice=listingPrice;
+else if(r<0.85)offerPrice=Math.floor(listingPrice*(0.85+Math.random()*0.1));
+else offerPrice=Math.floor(listingPrice*(1+Math.random()*0.1));
+player.mersgram.chats.unshift({id,name,avatar:name[0],lastText:`Куплю ${car.brand} ${car.model} за ${fmt(offerPrice)}`,unread:1,messages:[{from:'them',text:`Привет! Видел объявление: ${car.brand} ${car.model} за ${fmt(listingPrice)}. Готов взять за ${fmt(offerPrice)}. Что скажешь?`}],offer:{type:'buy',listingId:car.listing.id,carBrand:car.brand,carModel:car.model,price:offerPrice,listingPrice},resolved:false});
+updateMersBadge();save();
+}
+
+function updateMersBadge(){
+const total=player.mersgram.chats.filter(c=>c.unread>0&&!c.resolved).length;
+const el=document.getElementById('navMersBadge');
+if(el){if(total>0){el.style.display='block';el.innerText=total;}else{el.style.display='none';}}
+}
+
+function openMersChat(chatId){
+const chat=player.mersgram.chats.find(c=>c.id===chatId);
+if(!chat)return;
+chat.unread=0;updateMersBadge();save();
+document.getElementById('mersTitle').innerText=`💬 ${chat.name}`;
+const box=document.getElementById('mersBox');
+box.innerHTML=chat.messages.map(m=>`<div class="msg ${m.from==='me'?'player':'seller'}">${m.text}</div>`).join('');
+box.scrollTop=box.scrollHeight;
+const actions=document.getElementById('mersActions');
+if(chat.resolved||!chat.offer){actions.innerHTML=`<button class="btn btn-outline" onclick="closeModal('mMers');render()">Закрыть</button>`;}
+else if(chat.offer.type==='sale'){
+actions.innerHTML=`
+<button class="btn btn-success" style="margin-bottom:6px" onclick="mgBuyCar('${chatId}')">💰 Купить за ${fmt(chat.offer.price)}</button>
+<button class="btn btn-warning" style="margin-bottom:6px" onclick="mgHaggle('${chatId}')">🤝 Торг</button>
+<button class="btn btn-outline" onclick="mgDecline('${chatId}')">Отказ</button>`;
+}else if(chat.offer.type==='buy'){
+actions.innerHTML=`
+<button class="btn btn-success" style="margin-bottom:6px" onclick="mgSellCar('${chatId}')">💵 Продать за ${fmt(chat.offer.price)}</button>
+<button class="btn btn-warning" style="margin-bottom:6px" onclick="mgHaggle('${chatId}')">🤝 Торг</button>
+<button class="btn btn-outline" onclick="mgDecline('${chatId}')">Отказ</button>`;
+}
+openModal('mMers');
+}
+
+function mgBuyCar(chatId){
+const chat=player.mersgram.chats.find(c=>c.id===chatId);
+if(!chat||!chat.offer||chat.resolved||chat.offer.type!=='sale')return;
+const o=chat.offer;
+if(player.money<o.price){toast('Не хватает денег',true);return}
+const maxSlots=3+(player.garages[player.city]||0);
+if(player.cars.length>=maxSlots){toast(`Гараж полон`,true);return}
+spendMoney(o.price);
+player.cars.push({brand:o.brand,model:o.model,power:o.power,rarity:o.rarity,price:o.price,basePrice:Math.floor(o.price/8),condition:o.condition,seller:chat.name,damages:o.damages,haggleCount:0,stage:0,purchasePrice:o.price,visualVal:0,listing:null,jdm:{buffer:false,amp:false,frame:false,exhaust:false}});
+player.statsSession.carsBought++;
+chat.messages.push({from:'me',text:'Беру!'});
+chat.messages.push({from:'them',text:'Спасибо!'});
+chat.resolved=true;chat.offer=null;
+save();openMersChat(chatId);render();sfx('cash');toast(`Куплено: ${o.brand} ${o.model}`);
+}
+
+function mgSellCar(chatId){
+const chat=player.mersgram.chats.find(c=>c.id===chatId);
+if(!chat||!chat.offer||chat.resolved||chat.offer.type!=='buy')return;
+const o=chat.offer;
+const idx=player.cars.findIndex(c=>c.listing&&c.listing.id===o.listingId);
+if(idx===-1){chat.messages.push({from:'them',text:'Уже неактуально'});chat.resolved=true;chat.offer=null;save();openMersChat(chatId);toast('Машина уже не в продаже',true);return;}
+addMoney(o.price);player.cars.splice(idx,1);
+player.statsSession.carsSold++;
+chat.messages.push({from:'me',text:`Продаю за ${fmt(o.price)}.`});
+chat.messages.push({from:'them',text:'Отлично!'});
+chat.resolved=true;chat.offer=null;
+player.mersgram.chats.forEach(ch=>{
+if(ch!==chat&&ch.offer&&ch.offer.type==='buy'&&ch.offer.listingId===o.listingId){
+ch.messages.push({from:'them',text:'Уже продано'});ch.resolved=true;ch.offer=null;
+}
+});
+save();openMersChat(chatId);render();sfx('cash');toast(`Продано за ${fmt(o.price)}`);
+}
+
+function mgHaggle(chatId){
+const chat=player.mersgram.chats.find(c=>c.id===chatId);
+if(!chat||!chat.offer||chat.resolved)return;
+chat.messages.push({from:'me',text:'Скинешь?'});
+if(Math.random()<0.5){
+const disc=Math.floor(chat.offer.price*0.15);chat.offer.price-=disc;
+chat.messages.push({from:'them',text:`Ладно, ${fmt(disc)} скину. Итог: ${fmt(chat.offer.price)}`});
+sfx('success');
+}else{
+chat.messages.push({from:'them',text:'Нет, цена окончательная.'});sfx('error');
+}
+save();openMersChat(chatId);
+}
+
+function mgDecline(chatId){
+const chat=player.mersgram.chats.find(c=>c.id===chatId);
+if(!chat)return;
+chat.messages.push({from:'me',text:'Не интересно.'});
+chat.messages.push({from:'them',text:'Ок.'});
+chat.resolved=true;chat.offer=null;
+save();openMersChat(chatId);
+}
+
+// ===== TRAVEL / SLEEP =====
+function fadeAnim(emoji,text,cb){
+const f=document.getElementById('fadeAnim');
+f.innerHTML='';f.style.opacity='1';f.style.pointerEvents='all';
+const scene=document.createElement('div');
+scene.className='scene';
+scene.innerHTML=`<div class="driving-car">${emoji}</div><div class="city-label">${text}</div><div class="road"></div>`;
+f.appendChild(scene);
+setTimeout(()=>{const c=scene.querySelector('.driving-car');if(c)c.style.transform='translateX(150%)'},100);
+setTimeout(()=>{const l=scene.querySelector('.city-label');if(l)l.classList.add('visible')},500);
+setTimeout(()=>{f.style.opacity='0';f.style.pointerEvents='none';if(cb)cb();},2200);
+}
+
+function travel(city){
+const cost=CITIES[city].fuel;
+if(player.money<cost){toast('Нет на бензин',true);return}
+fadeAnim('🚗',`→ ${city}`,()=>{
+spendMoney(cost);player.city=city;advanceTime(120);
+generateMarket();save();switchTab('menu');toast(`Вы в ${city}`);
+});
+}
+
+function doSleep(){
+if(player.hour<20){toast('Спи после 20:00',true);return}
+fadeAnim('🛏️','Новый день',()=>{
+player.day++;player.hour=9;player.minute=0;
+player.bet+=player.bet*((Math.random()*0.25)-0.10);
+player.str+=player.str*((Math.random()*0.30)-0.15);
+const farmsInCity=player.farms.filter(f=>f.city===player.city).length;
+if(farmsInCity>0)player.bet+=farmsInCity*2;
+let rentIncome=0;
+player.properties.forEach(p=>{if(p.id!==player.residenceId&&p.rented)rentIncome+=PROPERTY_TYPES[p.type].rent;});
+if(rentIncome>0){addMoney(rentIncome);toast(`Аренда: +${fmt(rentIncome)}`)}
+DAILY_QUESTS.forEach(q=>{player.questsDone[q.id]=false});
+player.statsSession.carsBought=0;player.statsSession.carsSold=0;player.statsSession.racesWon=0;
+updateCryptoRate();
+maybeGenBuyerForListings(2);
+genMersgramIncoming();
+if(Math.random()<0.5)genMersgramIncoming();
+generateMarket();save();switchTab('menu');updateClockDisplay();toast(`День ${player.day}`);
+});
+}
+
+// ===== PROPERTIES =====
+function buyProperty(type){
+const t=PROPERTY_TYPES[type];
+const price=Math.floor(t.basePrice*CITIES[player.city].houseMod);
+if(player.money<price){toast('Мало денег',true);return}
+askPattern(`Купить ${t.name} за ${fmt(price)}?`,(drawn)=>{
+if(drawn!==player.pattern){toast('Неверный узор!',true);return}
+spendMoney(price);
+const prop={id:Date.now(),type,city:player.city,rented:false};
+player.properties.push(prop);
+if(!player.residenceId)player.residenceId=prop.id;
+save();render();toast(`${t.name} куплен!`);
+});
+}
+function toggleRent(propId){
+const p=player.properties.find(x=>x.id===propId);
+if(!p)return;
+if(p.id===player.residenceId){
+const others=player.properties.filter(x=>x.id!==propId);
+if(others.length===0){toast('Нужно другое жильё',true);return}
+player.residenceId=others[0].id;p.rented=true;
+toast(`Живёте в ${PROPERTY_TYPES[others[0].type].name}, сдаёте эту`);
+}else{p.rented=!p.rented;toast(p.rented?`Сдаётся за ${fmt(PROPERTY_TYPES[p.type].rent)}/день`:'Снято');}
+save();render();
+}
+function setResidence(propId){
+player.residenceId=propId;
+player.properties.forEach(p=>{if(p.id===propId)p.rented=false});
+save();render();toast('Переехали');
+}
+
+// ===== FARMS =====
+function buyFarm(type){
+if(player.properties.length===0){toast('Нужна недвижимость!',true);return}
+const propsInCity=player.properties.filter(p=>p.city===player.city);
+if(propsInCity.length===0){toast('Купите жильё здесь',true);return}
+const t=MINING_FARMS[type];
+if(player.money<t.price){toast('Мало денег',true);return}
+spendMoney(t.price);
+player.farms.push({id:Date.now(),type,city:player.city});
+save();render();toast(`${t.name} установлена!`);
+}
+
+// ===== GARAGE =====
+function buyGarage(){
+const lim=CITIES[player.city].garageLimit;
+const have=player.garages[player.city]||0;
+if(have>=lim){toast(`Максимум ${lim}`,true);return}
+if(player.money<200000){toast('Нужно 200 000 ₽',true);return}
+spendMoney(200000);
+player.garages[player.city]=(player.garages[player.city]||0)+1;
+save();render();toast('Гараж куплен!');
+}
+
+// ===== XP/LEVEL =====
+function giveXP(amount){
+player.xp+=amount;let leveled=false;
+while(player.level<LEVELS.length&&player.xp>=LEVELS[player.level]){player.level++;leveled=true;}
+if(leveled){sfx('levelup');toast(`🎉 Уровень ${player.level}!`);}
+save();render();
+}
+
+// ===== RACES =====
+function openRace(){
+if(player.level<5){toast('Гонки с 5 уровня!',true);return}
+if(player.cars.length===0){toast('Нужна машина',true);return}
+const car=player.cars[0];
+const carPower=car.power;
+const oppPower=Math.floor(carPower*(0.7+Math.random()*0.6));
+const bets=[1000,5000,10000,50000];
+let html='<div style="text-align:center;margin-bottom:8px">'+car.brand+' '+car.model+' ('+carPower+' л.с.)</div>';
+html+='<div style="text-align:center" class="sub">Противник: '+oppPower+' л.с.</div>';
+html+='<div class="row" style="margin-top:10px">';
+bets.forEach(b=>{html+=`<button class="btn btn-sm" onclick="startRace(${b},${oppPower})">${fmt(b)}</button>`});
+html+='</div>';
+document.getElementById('raceInfo').innerHTML=html;
+document.getElementById('raceResult').innerText='';
+document.getElementById('racePlayer').style.left='0';
+document.getElementById('raceEnemy').style.left='0';
+openModal('mRace');
+}
+
+function startRace(bet,oppPower){
+if(player.money<bet){toast('Мало денег',true);return}
+const car=player.cars[0];
+const myPower=car.power;
+const winChance=myPower/(myPower+oppPower);
+const win=Math.random()<winChance;
+spendMoney(bet);
+document.getElementById('raceInfo').innerHTML=`<div style="text-align:center">Ставка: ${fmt(bet)}</div>`;
+document.getElementById('raceResult').innerText='';
+const tp=document.getElementById('racePlayer');
+const te=document.getElementById('raceEnemy');
+let pPos=0,ePos=0;
+const interval=setInterval(()=>{
+const speedP=myPower/50;const speedE=oppPower/50;
+pPos+=Math.random()*speedP;ePos+=Math.random()*speedE;
+tp.style.left=Math.min(pPos,85)+'%';te.style.left=Math.min(ePos,85)+'%';
+if(pPos>=80||ePos>=80){
+clearInterval(interval);
+if(win){addMoney(bet*2);player.statsSession.racesWon++;document.getElementById('raceResult').innerHTML=`<span class="tg">🏆 Победа! +${fmt(bet)}</span>`;sfx('success');}
+else{document.getElementById('raceResult').innerHTML=`<span class="tr">💔 Проигрыш... -${fmt(bet)}</span>`;sfx('error');}
+save();render();
+}
+},100);
+}
+
+// ===== QUESTS / STATS =====
+function claimQuest(qid){
+const q=DAILY_QUESTS.find(x=>x.id===qid);
+if(!q||player.questsDone[qid])return;
+if(!q.check()){toast('Не выполнено',true);return}
+player.questsDone[qid]=true;addMoney(q.money);giveXP(q.xp);sfx('cash');
+}
+function updateTimeStats(){
+const now=Date.now();
+player.statsSession.timePlayed=now-player.statsSession.startedAt;
+if(player.statsTotal.lastUpdate){player.statsTotal.timePlayed=(player.statsTotal.timePlayed||0)+(now-player.statsTotal.lastUpdate);}
+player.statsTotal.lastUpdate=now;
+}
+setInterval(updateTimeStats,5000);
+function fmtTime(ms){
+const s=Math.floor(ms/1000);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+if(h>0)return`${h}ч ${m}м`;return`${m}м ${sec}с`;
+}
+
+// ===== SUDOKU =====
+const sudokuSolved=[[1,2,3,4],[3,4,1,2],[2,1,4,3],[4,3,2,1]];
+let sudokuCurrent=[],sudokuActive={r:null,c:null};
+function startSudoku(){
+sudokuCurrent=JSON.parse(JSON.stringify(sudokuSolved));
+for(let i=0;i<6;i++)sudokuCurrent[Math.floor(Math.random()*4)][Math.floor(Math.random()*4)]=0;
+sudokuActive={r:null,c:null};drawSudoku();openModal('mSudoku');
+}
+function drawSudoku(){
+const b=document.getElementById('sudokuBoard');b.innerHTML='';
+for(let r=0;r<4;r++)for(let c=0;c<4;c++){
+const v=sudokuCurrent[r][c];
+const d=document.createElement('div');
+d.className='scell'+(v!==0?' fixed':'')+(sudokuActive.r===r&&sudokuActive.c===c?' active':'');
+d.innerText=v!==0?v:'';
+if(v===0)d.onclick=()=>{sfx('click');sudokuActive={r,c};drawSudoku()};
+b.appendChild(d);
+}
+}
+function inputSudoku(n){
+if(sudokuActive.r===null){toast('Выберите клетку',true);return}
+sudokuCurrent[sudokuActive.r][sudokuActive.c]=n;
+sudokuActive={r:null,c:null};drawSudoku();
+}
+function checkSudoku(){
+for(let r=0;r<4;r++)for(let c=0;c<4;c++)if(sudokuCurrent[r][c]!==sudokuSolved[r][c]){toast('Ошибки!',true);return}
+addMoney(10000);save();closeModal('mSudoku');render();toast('Победа! +10 000 ₽');
+}
+
+// ===== BLOCK =====
+let bGrid=[],bPieces=[],dragData=null,bListenersAdded=false;
+function startBlock(){
+bGrid=Array(8).fill(null).map(()=>Array(8).fill(0));
+genPieces();drawBlockBoard();drawBlockPieces();openModal('mBlock');
+if(!bListenersAdded){
+window.addEventListener('pointermove',onDragMove,{passive:false});
+window.addEventListener('pointerup',onDragEnd,{passive:false});
+bListenersAdded=true;
+}
+}
+function genPieces(){
+bPieces=[];
+const shapes=[[[1]],[[1,1]],[[1],[1]],[[1,1,1]],[[1],[1],[1]],[[1,1],[1,1]],[[1,0],[1,1]],[[1,1,1],[0,1,0]]];
+for(let i=0;i<3;i++)bPieces.push(shapes[Math.floor(Math.random()*shapes.length)]);
+}
+function drawBlockBoard(){
+const b=document.getElementById('blockBoard');b.innerHTML='';
+for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+const d=document.createElement('div');
+d.className='bCell'+(bGrid[r][c]?' filled':'');
+b.appendChild(d);
+}
+}
+function drawBlockPieces(){
+const c=document.getElementById('blockPieces');c.innerHTML='';
+bPieces.forEach((p,idx)=>{
+const pd=document.createElement('div');pd.className='piece';
+pd.style.gridTemplateColumns=`repeat(${p[0].length},1fr)`;
+p.forEach(row=>row.forEach(cell=>{
+const cc=document.createElement('div');
+cc.style.width='18px';cc.style.height='18px';
+cc.style.background=cell?'var(--primary)':'transparent';cc.style.borderRadius='3px';
+pd.appendChild(cc);
+}));
+pd.addEventListener('pointerdown',(e)=>{
+e.preventDefault();
+dragData={piece:p,idx,element:null};
+const ghost=document.createElement('div');ghost.className='ghost';
+ghost.style.gridTemplateColumns=`repeat(${p[0].length},1fr)`;
+p.forEach(row=>row.forEach(cell=>{
+const g=document.createElement('div');
+g.style.width='36px';g.style.height='36px';
+g.style.background=cell?'var(--primary)':'transparent';
+g.style.opacity=cell?'0.8':'0';g.style.borderRadius='4px';
+ghost.appendChild(g);
+}));
+ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
+document.body.appendChild(ghost);dragData.element=ghost;
+});
+c.appendChild(pd);
+});
+}
+function onDragMove(e){
+if(!dragData||!dragData.element)return;
+dragData.element.style.left=e.clientX+'px';
+dragData.element.style.top=e.clientY+'px';
+}
+function onDragEnd(e){
+if(!dragData)return;
+if(dragData.element)dragData.element.remove();
+const br=document.getElementById('blockBoard').getBoundingClientRect();
+if(e.clientX>=br.left&&e.clientX<=br.right&&e.clientY>=br.top&&e.clientY<=br.bottom){
+const cell=38;
+const col=Math.floor((e.clientX-br.left)/cell);
+const row=Math.floor((e.clientY-br.top)/cell);
+const p=dragData.piece;
+const oR=Math.floor(p.length/2),oC=Math.floor(p[0].length/2);
+const fR=Math.max(0,Math.min(8-p.length,row-oR));
+const fC=Math.max(0,Math.min(8-p[0].length,col-oC));
+placeBlock(fR,fC,p,dragData.idx);
+}
+dragData=null;
+}
+function placeBlock(r,c,piece,idx){
+let ok=true;
+for(let i=0;i<piece.length;i++)for(let j=0;j<piece[i].length;j++){
+if(piece[i][j]&&(r+i>=8||c+j>=8||bGrid[r+i][c+j]))ok=false;
+}
+if(!ok){toast('Сюда нельзя',true);return}
+for(let i=0;i<piece.length;i++)for(let j=0;j<piece[i].length;j++){
+if(piece[i][j])bGrid[r+i][c+j]=1;
+}
+bPieces.splice(idx,1);if(bPieces.length===0)genPieces();
+let lines=0;
+for(let i=0;i<8;i++)if(bGrid[i].every(x=>x===1)){bGrid[i]=Array(8).fill(0);lines++}
+for(let j=0;j<8;j++){let full=true;for(let i=0;i<8;i++)if(bGrid[i][j]===0)full=false;if(full){for(let i=0;i<8;i++)bGrid[i][j]=0;lines++}}
+if(lines>0){let reward=0;for(let i=0;i<lines;i++)reward+=Math.floor(Math.random()*91)+10;addMoney(reward);save();toast(`Линия! +${fmt(reward)}`);}
+drawBlockBoard();drawBlockPieces();render();
+}
+
+// ===== TUTORIAL =====
+function startTutorial(){
+const steps=[
+"Здарова! Я Дядя Коля. 30 лет перекупаю тачки.",
+"Иди в Магазин → Автосалон. Там ~240 реальных машин — от Лады до Pagani.",
+"В Барахолке дешевле, но 30% продаванов врут.",
+"Купил — иди в Гараж. Шпаклюй, тюнингуй.",
+"Продажа: выставь по своей цене. Дешевле — больше желающих.",
+"Покупатели напишут в MersGram!",
+"Гонки — с 5 уровня. XP капает с заданий.",
+"Промокод VANECHKA даёт эксклюзивную шаху (100 млн ₽ гос. цена)."
+];
+let i=0;
+const btn=document.getElementById('alertBtn');
+function show(){
+if(i>=steps.length){player.tutorialDone=true;save();btn.innerText='ОК';btn.onclick=()=>closeModal('mAlert');closeModal('mAlert');render();return}
+document.getElementById('alertContent').innerHTML=`<h2 class="ty">Дядя Коля</h2><p style="margin-top:8px">${steps[i]}</p>`;
+btn.innerText='Далее';btn.onclick=()=>{i++;show()};
+openModal('mAlert');
+}
+show();
+}
+
+// ===== RENDER =====
+function render(){
+updateClockDisplay();updateMersBadge();
+const app=document.getElementById('app');
+const maxSlots=3+(player.garages[player.city]||0);
+const xpToNext=LEVELS[player.level]||999999;
+const xpPrev=LEVELS[player.level-1]||0;
+const xpProgress=Math.min(100,Math.round((player.xp-xpPrev)/(xpToNext-xpPrev)*100));
+let c='';
+
+if(player.currentTab==='menu'){
+c=`<div class="card" style="background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff">
+<h2>Привет, ${player.name}!</h2>
+<div style="font-size:22px;font-weight:bold;margin-top:4px">${fmt(player.money)}</div>
+<div class="sub" style="color:rgba(255,255,255,0.8)">💵 ${fmtUsd(player.usd)} · 🪙 ${player.bet.toFixed(0)} BET · ⭐ ${player.str.toFixed(0)} STR</div>
+<div class="sub" style="color:rgba(255,255,255,0.8)">₿ 1 BTC = ${fmt(player.crypto.rate)} · у вас ${player.crypto.btc} BTC</div>
+<div class="sub" style="color:rgba(255,255,255,0.8);margin-top:6px">Уровень ${player.level} · XP ${player.xp}/${xpToNext}</div>
+<div class="progress" style="background:rgba(0,0,0,0.3)"><div class="progressBar" style="width:${xpProgress}%;background:#fff"></div></div>
+</div>
+<div class="card card2"><div class="row" style="justify-content:space-between;align-items:center">
+<div><div class="val">📍 ${player.city}</div><div class="sub">${CITIES[player.city].desc} · Слотов ${player.cars.length}/${maxSlots}</div></div>
+<button class="btn btn-sm" style="width:auto" onclick="switchTab('travel')">Сменить</button>
+</div></div>
+<div class="grid2">
+<button class="btn btn-warning" onclick="doSleep()">🛏️ Спать</button>
+<button class="btn" onclick="switchTab('quests')">📋 Задания</button>
+<button class="btn" onclick="switchTab('auction')" style="background:var(--gold);color:#000">🎰 Аукцион</button>
+<button class="btn" onclick="switchTab('mersgram')" style="background:var(--accent)">💬 MersGram</button>
+</div>`;
+}
+
+else if(player.currentTab==='shop'||player.currentTab==='bazar'){
+const isB=player.currentTab==='bazar';
+const list=sortCars(isB?bazar:market);
+const sm=sortMode[isB?'bazar':'shop'];
+c=`<div class="row"><button class="btn ${!isB?'':'btn-outline'}" onclick="switchTab('shop')">🏢 Автосалон</button><button class="btn ${isB?'':'btn-outline'}" onclick="switchTab('bazar')">🏷️ Барахолка</button></div>`;
+c+=`<div class="sortBar">
+<button class="sortBtn ${sm==='default'?'active':''}" onclick="setSort('${isB?'bazar':'shop'}','default')">По умолч.</button>
+<button class="sortBtn ${sm==='priceAsc'?'active':''}" onclick="setSort('${isB?'bazar':'shop'}','priceAsc')">₽ ↑</button>
+<button class="sortBtn ${sm==='priceDesc'?'active':''}" onclick="setSort('${isB?'bazar':'shop'}','priceDesc')">₽ ↓</button>
+<button class="sortBtn ${sm==='condAsc'?'active':''}" onclick="setSort('${isB?'bazar':'shop'}','condAsc')">Сост. ↑</button>
+<button class="sortBtn ${sm==='power'?'active':''}" onclick="setSort('${isB?'bazar':'shop'}','power')">Мощность</button>
+</div>`;
+if(isB)c+=`<div class="sub" style="color:var(--danger)">⚠️ 30% продавцов врут!</div>`;
+if(list.length===0)c+=`<div class="card sub">Пусто.</div>`;
+list.forEach(car=>{
+const realIdx=isB?bazar.indexOf(car):market.indexOf(car);
+const condColor=car.condition>80?'tg':(car.condition>50?'ty':'tr');
+const dmgHtml=car.damages.map(d=>`<div class="dmgItem">${d}</div>`).join('');
+c+=`<div class="card">
+<div class="row" style="justify-content:space-between;align-items:center;gap:8px">
+<div class="carPicWrap">${carSVG(car)}</div>
+<div style="flex:1;min-width:0">
+<div class="val">${car.brand} ${car.model}</div>
+<div class="sub">${car.power} л.с. · <span class="${condColor}">${car.condition}%</span></div>
+<div class="val ty" style="margin-top:2px">${fmt(car.price)}</div>
+</div>
+</div>
+<div class="dmgList">${dmgHtml}</div>
+<div class="row" style="margin-top:6px">
+<button class="btn btn-sm" style="flex:1" onclick="openChat(${realIdx},${isB})">💬 Чат</button>
+${isB?`<button class="btn btn-sm btn-warning" style="flex:1" onclick="diagnostics(${realIdx})">🔍 5к</button>`:''}
+</div>
+</div>`;
+});
+}
+
+else if(player.currentTab==='garage'){
+c=`<h2>🚗 Гараж <span class="sub">(${player.cars.length}/${maxSlots})</span></h2>`;
+const gc=player.garages[player.city]||0;
+c+=`<div class="card card2"><div class="row" style="justify-content:space-between"><div>🏠 Гаражи в ${player.city}</div><div class="val">${gc}/${CITIES[player.city].garageLimit}</div></div><div class="sub">Слотов: ${3+gc} · Цена: 200 000 ₽</div>${gc<CITIES[player.city].garageLimit?`<button class="btn btn-sm btn-warning" onclick="buyGarage()" style="margin-top:6px">Купить гараж</button>`:''}</div>`;
+if(player.cars.length===0)c+=`<div class="card sub">Машин нет</div>`;
+player.cars.forEach((car,i)=>{
+const stageStr=car.stage>0?` · S${car.stage}`:'';
+const jdmCount=car.jdm?Object.values(car.jdm).filter(x=>x).length:0;
+const jdmStr=jdmCount>0?` · 🔥JDM×${jdmCount}`:'';
+let cls='card';
+if(car.exclusive)cls+=' card-exclusive';
+if(car.listing)cls+=' card-listed';
+c+=`<div class="${cls}">
+<div class="row" style="gap:8px;align-items:center">
+<div class="carPicWrap">${carSVG(car)}</div>
+<div style="flex:1;min-width:0">
+<div class="val">${car.brand} ${car.model}</div>
+<div class="sub">${car.power} л.с.${stageStr}${jdmStr} · ${car.condition}%</div>
+${car.exclusive?'<div class="sub ty">🔥 ЭКСКЛЮЗИВ · гос. '+fmt(getGovPrice(car))+'</div>':''}
+</div>
+</div>`;
+if(car.listing){
+c+=`<div class="tag" style="background:var(--warning);color:#000;margin-top:4px">🏷️ На продаже: ${fmt(car.listing.price)} · гос. ${fmt(getGovPrice(car))}</div>`;
+c+=`<div class="grid2" style="margin-top:6px">
+<button class="btn btn-sm btn-warning" onclick="openSellDialog(${i})">✏️ Изменить</button>
+<button class="btn btn-sm btn-outline" onclick="unlistCar(${i})">❌ Снять</button>
+</div>`;
+}else{
+c+=`<div class="grid2" style="margin-top:6px">
+<button class="btn btn-sm btn-success" onclick="openSellDialog(${i})">🏷️ Выставить</button>
+<button class="btn btn-sm" onclick="openVisual(${i})">🛠️ Тюнинг</button>
+</div>`;
+if(!car.exclusive){
+c+=`<button class="btn btn-sm btn-danger" style="margin-top:4px" onclick="quickSell(${i})">💵 Быстро (${fmt(Math.floor(getGovPrice(car)*0.8)+(car.visualVal||0))})</button>`;
+}
+}
+c+=`</div>`;
+});
+}
+
+else if(player.currentTab==='games'){
+c=`<h2>🎮 Развлечения</h2>
+<div class="card"><div class="val">🧩 Судоку</div><div class="sub">Награда: 10 000 ₽</div><button class="btn btn-sm" style="margin-top:6px;background:var(--gold);color:#000" onclick="startSudoku()">Играть</button></div>
+<div class="card"><div class="val">🧱 Блок Крипт</div><div class="sub">10-100 ₽ за линию</div><button class="btn btn-sm" style="margin-top:6px;background:var(--accent)" onclick="startBlock()">Играть</button></div>
+<div class="card"><div class="val">🏁 Гонки ${player.level<5?'🔒':''}</div><div class="sub">${player.level<5?'С 5 уровня':'Ставка × 2 при победе'}</div><button class="btn btn-sm" style="margin-top:6px" onclick="openRace()" ${player.level<5?'disabled':''}>${player.level<5?'🔒':'Гонять'}</button></div>`;
+}
+
+else if(player.currentTab==='more'){
+c=`<h2>Приложения</h2>`;
+c+=`<div class="appGrid">`;
+APPS.forEach(a=>{
+let badge='';
+if(a.badge==='mersgram'){
+const total=player.mersgram.chats.filter(x=>x.unread>0&&!x.resolved).length;
+if(total>0)badge=`<span class="appBadge">${total}</span>`;
+}
+c+=`<div class="appIcon" onclick="switchTab('${a.id}')">
+<div class="icoBox" style="background:${a.bg}">${a.emoji}${badge}</div>
+<div class="icoName">${a.name}</div>
+</div>`;
+});
+c+=`</div>`;
+}
+
+else if(player.currentTab==='auction'){
+c=`<h2>🎰 Аукцион</h2>`;
+c+=`<button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+if(!auctionState.lot){c+=`<div class="card sub">Загружается...</div>`;setTimeout(generateAuctionLot,1000);}
+else{
+const lot=auctionState.lot;
+const cfg=CONTAINER_TIERS[lot.tier];
+const timeLeft=Math.max(0,Math.ceil((lot.endsAt-Date.now())/1000));
+const cc=lot.contentCar;
+const previewCar={brand:cc[0]||cc.brand,model:cc[1]||cc.model,power:cc[3]||cc.power,rarity:cc[4]||cc.rarity,exclusive:!!cc.exclusive};
+c+=`<div class="lotCard">
+<div class="lotTimer">⏱ ${timeLeft}с</div>
+<div class="tierBanner" style="background:${cfg.color};color:#000">${cfg.emoji} ${cfg.name}</div>
+<div class="sub">Возможное содержимое:</div>
+<div class="row" style="gap:10px;align-items:center">
+<div class="carPicWrap">${carSVG(previewCar)}</div>
+<div>
+<div class="val">${previewCar.brand} ${previewCar.model}</div>
+<div class="sub">${previewCar.power} л.с.</div>
+</div>
+</div>
+<div class="sub" style="margin-top:6px">Текущая ставка:</div>
+<div class="lotBid">${fmt(lot.currentBid)}</div>
+<div class="sub">${lot.bidder==='none'?'Ставок нет':(lot.bidder==='player'?'👤 Вы лидируете':'🥇 '+lot.bidder)}</div>
+<button class="btn btn-warning" style="margin-top:8px" onclick="placeBid()">💰 Сделать ставку</button>
+</div>`;
+}
+c+=`<div class="card card2 sub">💡 Боты перебивают — не зевай!</div>`;
+}
+
+else if(player.currentTab==='mersgram'){
+c=`<h2>💬 MersGram</h2>`;
+c+=`<button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+if(!player.mersgram.chats.length){c+=`<div class="card sub">Пока тишина. Выстави машину на продажу — и сюда начнут писать.</div>`;}
+else{
+c+=`<div style="display:flex;flex-direction:column;gap:8px">`;
+player.mersgram.chats.forEach(ch=>{
+const unreadBadge=ch.unread>0?`<span class="mgUnread">${ch.unread}</span>`:'';
+c+=`<div class="mgChat" onclick="openMersChat('${ch.id}')">
+<div class="mgAvatar">${ch.avatar||ch.name[0]}</div>
+<div class="mgInfo">
+<div class="mgName"><span>${ch.name}</span>${unreadBadge}</div>
+<div class="mgPreview">${ch.resolved?'✓ Завершено · ':''}${ch.lastText}</div>
+</div>
+</div>`;
+});
+c+=`</div>`;
+}
+}
+
+else if(player.currentTab==='crypto'){
+c=`<h2>₿ Крипта</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+c+=`<div class="card" style="background:linear-gradient(135deg,#F7931A,#8A5A00);color:#fff">
+<div class="sub" style="color:rgba(255,255,255,0.9)">Курс BTC</div>
+<div style="font-size:24px;font-weight:bold">${fmt(player.crypto.rate)}</div>
+<div class="sub" style="color:rgba(255,255,255,0.85)">У вас: ${player.crypto.btc} BTC = ${fmt(player.crypto.btc*player.crypto.rate)}</div>
+</div>`;
+c+=`<div class="card"><div class="sub">Курс меняется ±10% в час.</div>
+<div class="grid2" style="margin-top:8px">
+<button class="btn btn-success" onclick="buyCrypto()">Купить 1 BTC<br><span style="font-size:11px">−${fmt(player.crypto.rate)}</span></button>
+<button class="btn btn-danger" onclick="sellCrypto()" ${player.crypto.btc<=0?'disabled':''}>Продать 1 BTC<br><span style="font-size:11px">+${fmt(player.crypto.rate)}</span></button>
+</div></div>`;
+}
+
+else if(player.currentTab==='realestate'){
+c=`<h2>🏢 Недвижимость</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+c+=`<h3>🏘️ Купить в ${player.city}</h3>`;
+for(const[k,t]of Object.entries(PROPERTY_TYPES)){
+if(k==='коммуналка')continue;
+const price=Math.floor(t.basePrice*CITIES[player.city].houseMod);
+c+=`<div class="card"><div class="row" style="justify-content:space-between"><div class="val">${t.emoji} ${t.name}</div><div class="val ty">${fmt(price)}</div></div><div class="sub">Аренда: ${fmt(t.rent)}/день</div><button class="btn btn-sm btn-success" style="margin-top:6px" onclick="buyProperty('${k}')">Купить</button></div>`;
+}
+c+=`<h3>🏠 Моё (${player.properties.length})</h3>`;
+player.properties.forEach(p=>{
+const t=PROPERTY_TYPES[p.type];
+const isHome=p.id===player.residenceId;
+c+=`<div class="card card2"><div class="row" style="justify-content:space-between"><div class="val">${t.emoji} ${t.name}</div>${isHome?'<span class="tag">🏠 Дом</span>':(p.rented?'<span class="tag" style="color:var(--success)">💰 Аренда</span>':'<span class="tag">Свободно</span>')}</div><div class="sub">📍 ${p.city} · ${t.rent>0?fmt(t.rent)+'/день':'—'}</div>
+<div class="row" style="margin-top:6px">
+${!isHome?`<button class="btn btn-sm" onclick="toggleRent(${p.id})">${p.rented?'Снять':'Сдать'}</button>`:''}
+${!isHome?`<button class="btn btn-sm btn-outline" onclick="setResidence(${p.id})">Переехать</button>`:''}
+</div></div>`;
+});
+c+=`<h3>⛏️ Фермы</h3>`;
+if(player.properties.filter(p=>p.city===player.city).length===0){c+=`<div class="card sub">Нужно жильё здесь.</div>`;}
+else{
+for(const[k,t]of Object.entries(MINING_FARMS)){
+c+=`<div class="card"><div class="val">${t.emoji} ${t.name}</div><div class="sub">+${t.betDay} BET, +${t.strDay} STR/день</div><div class="row" style="justify-content:space-between;margin-top:6px"><div class="val">${fmt(t.price)}</div><button class="btn btn-sm btn-warning" onclick="buyFarm('${k}')">Купить</button></div></div>`;
+}
+}
+if(player.farms.length>0){
+c+=`<h3>Мои фермы (${player.farms.length})</h3>`;
+player.farms.forEach(f=>{
+const t=MINING_FARMS[f.type];
+c+=`<div class="card card2 sub">${t.emoji} ${t.name} · 📍 ${f.city}</div>`;
+});
+}
+}
+
+else if(player.currentTab==='quests'){
+c=`<h2>📋 Задания дня</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+DAILY_QUESTS.forEach(q=>{
+const done=player.questsDone[q.id];
+const canDo=q.check()&&!done;
+c+=`<div class="card"><div class="val">${q.text}</div><div class="sub">${q.xp} XP · ${fmt(q.money)}</div>${done?'<div class="tag tg" style="margin-top:6px">✅ Готово</div>':`<button class="btn btn-sm ${canDo?'btn-success':''}" style="margin-top:6px" onclick="claimQuest('${q.id}')" ${!canDo?'disabled':''}>${canDo?'Забрать':'Не выполнено'}</button>`}</div>`;
+});
+}
+
+else if(player.currentTab==='stats'){
+c=`<h2>📊 Статистика</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+c+=`<h3>📈 Всего</h3><div class="card">
+<div class="sub">Время: ${fmtTime(player.statsTotal.timePlayed||0)}</div>
+<div class="sub">Заработано: ${fmt(player.statsTotal.moneyEarned||0)}</div>
+<div class="sub">Уровень: ${player.level} · XP: ${player.xp}</div>
+</div>`;
+c+=`<h3>⏱️ Сеанс</h3><div class="card">
+<div class="sub">Время: ${fmtTime(player.statsSession.timePlayed||0)}</div>
+<div class="sub">Заработано: ${fmt(player.statsSession.moneyEarned)}</div>
+<div class="sub">Куплено/продано: ${player.statsSession.carsBought}/${player.statsSession.carsSold}</div>
+<div class="sub">Побед: ${player.statsSession.racesWon}</div>
+</div>`;
+}
+
+else if(player.currentTab==='travel'){
+c=`<h2>🚙 Города</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>`;
+for(const city in CITIES){
+const info=CITIES[city];
+const here=city===player.city;
+c+=`<div class="card"><div class="row" style="justify-content:space-between"><div class="val">${city} ${here?'📍':''}</div></div><div class="sub">${info.desc} · Бензин: ${fmt(info.fuel)}</div>${!here?`<button class="btn btn-sm" style="margin-top:6px" onclick="travel('${city}')">Поехали</button>`:''}</div>`;
+}
+}
+
+else if(player.currentTab==='settings'){
+c=`<h2>⚙️ Настройки</h2><button class="btn btn-outline btn-sm" onclick="switchTab('more')">← Назад</button>
+<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div class="val">Тема</div><button class="btn btn-sm" style="width:auto" onclick="toggleTheme()">${player.theme==='dark'?'Тёмная':'Светлая'}</button></div></div>
+<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div class="val">Звуки</div><button class="btn btn-sm" style="width:auto" onclick="toggleSound()">${player.sound?'Вкл':'Выкл'}</button></div></div>
+<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div class="val">Обучение</div><button class="btn btn-sm" style="width:auto" onclick="startTutorial()">Пройти</button></div></div>
+<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div class="val">Промокод</div><button class="btn btn-sm btn-warning" style="width:auto" onclick="openPromo()">Ввести</button></div></div>
+<button class="btn btn-outline" style="margin-top:16px;border-color:var(--danger);color:var(--danger)" onclick="openDev()">👨‍💻 Меню разработчика</button>`;
+}
+
+app.innerHTML=c;
+}
+
+function setSort(t,m){sortMode[t]=m;render();sfx('click')}
+function toggleTheme(){player.theme=player.theme==='dark'?'light':'dark';document.body.setAttribute('data-theme',player.theme);save();render()}
+function toggleSound(){player.sound=!player.sound;save();render();if(player.sound)sfx('click')}
+
+function switchTab(tab){
+sfx('click');player.currentTab=tab;
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+const navMap={menu:'menu',shop:'shop',bazar:'shop',garage:'garage',games:'games',more:'more',realestate:'more',quests:'more',stats:'more',travel:'more',settings:'more',crypto:'more',auction:'more',mersgram:'more'};
+document.getElementById('nav-'+(navMap[tab]||'menu')).classList.add('active');
+if((tab==='shop'||tab==='bazar')&&(!market.length||!bazar.length))generateMarket();
+if(tab==='auction'&&!auctionState.lot)generateAuctionLot();
+save();render();
+}
+
+// ===== DEV =====
+function openDev(){
+askInput('Пароль:',(p)=>{
+if(p!=='admin2026'){toast('Неверно',true);return}
+closeModal('mInput');
+const btn=document.getElementById('alertBtn');
+btn.innerText='Закрыть';btn.onclick=()=>closeModal('mAlert');
+document.getElementById('alertContent').innerHTML=`
+<h3 style="color:var(--danger)">👨‍💻 Разработчик</h3>
+<div class="sub">Уровень ${player.level} · XP ${player.xp}</div>
+<h3>💰 Деньги</h3>
+<div class="grid3">
+<button class="btn btn-sm" onclick="devAdd('money',100000)">+100к ₽</button>
+<button class="btn btn-sm" onclick="devAdd('money',500000)">+500к</button>
+<button class="btn btn-sm" onclick="devAdd('money',1000000)">+1M</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm" onclick="devAdd('money',100000000)">+100M</button>
+<button class="btn btn-sm" onclick="devAdd('money',1000000000)">+1B</button>
+<button class="btn btn-sm" onclick="devAdd('money',-player.money+100000)">Сброс</button>
+</div>
+<h3>💵 Валюта</h3>
+<div class="grid3">
+<button class="btn btn-sm" onclick="devAdd('usd',1000)">+$1000</button>
+<button class="btn btn-sm" onclick="devAdd('bet',1000)">+1000 BET</button>
+<button class="btn btn-sm" onclick="devAdd('str',1000)">+1000 STR</button>
+</div>
+<h3>⭐ Опыт</h3>
+<div class="grid3">
+<button class="btn btn-sm btn-success" onclick="devAdd('xp',100)">+100 XP</button>
+<button class="btn btn-sm btn-success" onclick="devAdd('xp',1000)">+1000 XP</button>
+<button class="btn btn-sm btn-success" onclick="devAdd('xp',10000)">+10000 XP</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm btn-warning" onclick="devAdd('level',1)">+1 LVL</button>
+<button class="btn btn-sm btn-warning" onclick="devAdd('level',5)">+5 LVL</button>
+<button class="btn btn-sm btn-warning" onclick="devLevelSet()">Задать</button>
+</div>
+<h3>🔥 Эксклюзив</h3>
+<button class="btn btn-sm" style="background:var(--gold);color:#000" onclick="giveExclusive('VAZ2106')">🚗 VAZ 2106 «Дикая шаха»</button>
+<h3>⚙️ Прочее</h3>
+<div class="grid3">
+<button class="btn btn-sm" onclick="player.hour=22;render();toast('22:00')">22:00</button>
+<button class="btn btn-sm" onclick="player.cars=[];render();toast('Гараж пуст')">Очистить</button>
+<button class="btn btn-sm" onclick="generateMarket();toast('Рынок')">Рынок</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm" onclick="updateCryptoRate();save();render();toast('Курс BTC')">Курс BTC</button>
+<button class="btn btn-sm" onclick="player.promosUsed={};save();toast('Сброс промо')">Сброс промо</button>
+<button class="btn btn-sm" onclick="genMersgramIncoming();render();toast('Входящее')">MersGram</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm" onclick="maybeGenBuyerForListings(5);render();toast('Покупатели')">Покупатели</button>
+<button class="btn btn-sm" onclick="auctionState.lot=null;generateAuctionLot();render();toast('Новый лот')">Новый лот</button>
+<button class="btn btn-sm" onclick="player.mersgram={chats:[]};save();render();toast('MG очищен')">Очистить MG</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm" onclick="player.pattern='0-1-2-3';save();toast('Паттерн 0-1-2-3')">Паттерн</button>
+<button class="btn btn-sm" onclick="player.cars.forEach(c=>c.listing=null);save();render();toast('Снято')">Снять листинги</button>
+<button class="btn btn-sm" onclick="player.cars.forEach(c=>{if(!c.exclusive)c.listing={price:Math.floor(getGovPrice(c)*0.4),id:'lst_dev_'+Math.random().toString(36).slice(2,8),listedAt:Date.now()}});save();render();toast('Выставлено -60%')">Выставить -60%</button>
+</div>
+<div class="grid3" style="margin-top:6px">
+<button class="btn btn-sm" onclick="console.log('Всего машин в базе:',CARS.length);toast('Машин в базе: '+CARS.length)">CARS: ${CARS.length}</button>
+<button class="btn btn-sm" onclick="render();toast('Рендер')">Рендер</button>
+<button class="btn btn-sm" onclick="save();toast('Сейв')">Сейв</button>
+</div>
+<button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="if(confirm('Сброс?')){localStorage.clear();location.reload()}">Сброс</button>
+`;
+openModal('mAlert');
+},true);
+}
+
+function devAdd(t,n){
+if(t==='money')addMoney(n);
+if(t==='usd')player.usd+=n;
+if(t==='bet')player.bet+=n;
+if(t==='str')player.str+=n;
+if(t==='xp'){giveXP(n);return}
+if(t==='level'){player.level=Math.max(1,Math.min(LEVELS.length,player.level+n));player.xp=Math.max(player.xp,LEVELS[player.level-1]||0);sfx('levelup');}
+save();render();toast(`${n>=0?'+':''}${n}`);
+}
+function devLevelSet(){
+askInput('Уровень (число):',(v)=>{
+const lvl=parseInt(v);
+if(!lvl||lvl<1||lvl>LEVELS.length){toast('Неверно',true);return}
+player.level=lvl;player.xp=LEVELS[lvl-1]||0;
+save();render();sfx('levelup');toast(`Уровень ${lvl}`);
+});
+}
+
+// ===== INIT =====
+function initGame(){
+initPattern();load();startClock();startAuctionTicker();updateClockDisplay();
+if(!player.pattern){
+document.getElementById('app').innerHTML=`<div style="text-align:center;margin-top:100px"><h2 style="font-size:30px;color:var(--primary)">AUTO-CRYPTO</h2><p class="sub" style="margin-bottom:20px">Симулятор перекупа v9.0</p><button class="btn" onclick="newProfile()">Создать профиль</button></div>`;
+document.querySelector('.nav').style.display='none';
+}else{
+document.querySelector('.nav').style.display='flex';
+render();
+}
+}
+
+function newProfile(){
+askInput('Ваше имя:',(name)=>{
+if(!name)name='Игрок';
+player.name=name;
+setTimeout(()=>{
+askPattern('Код-подпись',(pattern)=>{
+player.pattern=pattern;
+player.properties.push({id:Date.now(),type:'коммуналка',city:player.city,rented:false});
+player.residenceId=player.properties[0].id;
+player.currentTab='menu';
+generateMarket();
+player.mersgram.chats.unshift({
+id:'mg_welcome',name:'Дядя Коля',avatar:'К',
+lastText:'Добро пожаловать в MersGram',
+unread:1,
+messages:[{from:'them',text:'Здарова! Выставляй тачки в гараже — сюда будут писать покупатели. Дешевле = больше желающих.'}],
+resolved:false,offer:null
+});
+save();
+document.querySelector('.nav').style.display='flex';
+render();toast('Добро пожаловать!');
+setTimeout(()=>{
+const btn=document.getElementById('alertBtn');
+btn.innerText='ОК';btn.onclick=()=>closeModal('mAlert');
+document.getElementById('alertContent').innerHTML=`<h2 class="ty">Дядя Коля</h2><p style="margin-top:8px">Хочешь обучение?</p><div class="row" style="margin-top:10px"><button class="btn btn-outline" onclick="closeModal('mAlert');player.tutorialDone=true;save()">Пропустить</button><button class="btn btn-success" onclick="closeModal('mAlert');startTutorial()">Пройти</button></div>`;
+openModal('mAlert');
+},500);
+});
+},300);
+});
+}
+
+window.onload=initGame;
+</script>
+</body>
+</html>
